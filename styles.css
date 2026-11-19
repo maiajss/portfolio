@@ -32,11 +32,11 @@ img { max-width: 100%; height: auto; display: block; }
   width: 200px;
   margin: 0 auto 2rem;
 }
-/* Header headline is larger and all caps; the rest matches the project subtext (0.96rem) */
+/* Header text all matches the project subtext (0.96rem); the headline stays all caps */
 .intro h1 {
   font-family: var(--font-type);
   font-weight: 500;           /* DM Mono's heaviest weight */
-  font-size: 1.4rem;          /* 22.4px: the one larger line in the header */
+  font-size: 0.96rem;         /* same as the bio below it */
   line-height: 1.3;
   text-transform: uppercase;
   letter-spacing: 0.03em;
