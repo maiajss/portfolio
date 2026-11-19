@@ -103,6 +103,19 @@ img { max-width: 100%; height: auto; display: block; }
   text-decoration: none;
   position: relative;
 }
+/* Optional background image: gritty, black-and-white, 30% opacity,
+   set per band with style="--band-img: url(...)" */
+.band--img { isolation: isolate; overflow: hidden; }
+.band--img::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background: var(--band-img) center / cover no-repeat;
+  filter: grayscale(1) contrast(1.35);
+  opacity: 0.3;
+  pointer-events: none;
+}
 .band--dark  { background: var(--black); color: var(--white); }
 .band--red   { background: var(--red);   color: var(--white); }
 .band--light { background: var(--white); color: var(--black); }
