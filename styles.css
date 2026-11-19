@@ -255,7 +255,15 @@ img { max-width: 100%; height: auto; display: block; }
   line-height: 1.55;
   max-width: 40em;
   margin: 0;
-  opacity: 0.8;
+}
+.project__body p { margin: 0 0 1em; }
+.project__body p:last-child { margin-bottom: 0; }
+.project__award {
+  font-family: var(--font-mono);
+  font-size: 0.8rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  margin: 0;
 }
 
 .site-foot {
