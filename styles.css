@@ -1,11 +1,11 @@
-/* Type and color taken from adbusters.org/support (header) and
-   subscribe.adbusters.org (project bands). All fonts are free Google Fonts. */
+/* Header uses DM Mono, same as the project text. Bands take type and color from
+   subscribe.adbusters.org. All fonts are free Google Fonts. */
 :root {
   --black: #0a0a0a;
   --white: #f5f1eb;
   --red: #e31c1c;
   --ink: #111111;
-  --font-type: "Special Elite", "Courier New", monospace;
+  --font-type: "DM Mono", "Courier New", monospace;
   --font-head: "Oswald", Impact, "Arial Black", sans-serif;
   --font-mono: "DM Mono", "Courier New", monospace;
 }
@@ -30,7 +30,7 @@ img { max-width: 100%; height: auto; display: block; }
 }
 .intro h1 {
   font-family: var(--font-type);
-  font-weight: 700;
+  font-weight: 500;           /* DM Mono's heaviest weight */
   font-size: 2.1rem;          /* 33.6px */
   line-height: 1.1;
   margin: 0 auto 1.8rem;      /* 28.8px */

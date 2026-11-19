@@ -8,4 +8,4 @@ Maia Swift's art director portfolio. Plain static HTML/CSS, ready for GitHub Pag
 - `styles.css` – all styles
 - `assets/` – header illustration and signature
 
-Fonts (free, from Google Fonts): Special Elite (header), Oswald 700 (project titles), DM Mono (project text).
+Fonts (free, from Google Fonts): DM Mono (header and project text), Oswald 700 (project titles).
