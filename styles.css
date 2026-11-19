@@ -116,6 +116,35 @@ img { max-width: 100%; height: auto; display: block; }
   opacity: var(--band-img-opacity, 0.4);   /* override per band */
   pointer-events: none;
 }
+/* Product shot kept at its own resolution (never scaled up) and centred in
+   the space between the end of the title and the right edge on desktop.
+   --title-em is the title's width in ems; --backdrop is the photo's own
+   background colour, laid over the whole band at the same 40%. */
+.band--product { isolation: isolate; overflow: hidden; }
+/* One layer holds the backdrop colour and the photo, so both fade together */
+.band__layer {
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background: var(--backdrop);
+  opacity: 0.4;
+  pointer-events: none;
+}
+.band__product {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: calc(5vw + var(--title-em) * clamp(3.2rem, 11.5vw, 9rem));
+  width: calc(100% - 5vw - var(--title-em) * clamp(3.2rem, 11.5vw, 9rem));
+  max-width: none;
+  height: 100%;
+  object-fit: contain;
+  object-position: center;
+}
+@media (max-width: 720px) {
+  .band__product { left: 0; width: 100%; }
+}
+
 /* Moving background (a looping video instead of a GIF, far smaller).
    Same treatment as the still images; it covers the still poster. */
 .band__media {
