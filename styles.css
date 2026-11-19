@@ -1,0 +1,168 @@
+/* Type and color taken from adbusters.org/support (header) and
+   subscribe.adbusters.org (project bands). All fonts are free Google Fonts. */
+:root {
+  --black: #0a0a0a;
+  --white: #f5f1eb;
+  --red: #e31c1c;
+  --ink: #111111;
+  --font-type: "Special Elite", "Courier New", monospace;
+  --font-head: "Oswald", Impact, "Arial Black", sans-serif;
+  --font-mono: "DM Mono", "Courier New", monospace;
+}
+
+*, *::before, *::after { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; }
+body { margin: 0; background: var(--black); color: var(--white); }
+img { max-width: 100%; height: auto; display: block; }
+
+/* ---------- Header (adbusters.org/support) ---------- */
+.intro {
+  background: #ffffff;
+  color: var(--ink);
+  font-family: var(--font-type);
+  text-align: center;
+  padding: 3rem 1rem 4.5rem;
+}
+.intro__art {
+  width: min(420px, 80vw);
+  margin: 0 auto 1.5rem;
+  mix-blend-mode: multiply;
+}
+.intro h1 {
+  font-family: var(--font-type);
+  font-weight: 700;
+  font-size: 2.1rem;          /* 33.6px */
+  line-height: 1.1;
+  margin: 0 auto 1.8rem;      /* 28.8px */
+  max-width: 1080px;
+}
+.intro__bio {
+  max-width: 1080px;
+  margin: 0 auto;
+}
+.intro__bio p {
+  font-size: 1.4rem;          /* 22.4px */
+  line-height: 1.4;           /* 31.36px */
+  margin: 0 0 1.4rem;
+}
+.intro__sign {
+  width: 200px;
+  margin: 2.5rem auto 0.75rem;
+}
+.intro__hi {
+  font-size: 0.95rem;
+  margin: 0;
+}
+.intro__hi a { color: inherit; }
+
+@media (max-width: 640px) {
+  .intro h1 { font-size: 1.6rem; }
+  .intro__bio p { font-size: 1.1rem; }
+  .intro__sign { width: 160px; }
+}
+
+/* ---------- Project bands (subscribe.adbusters.org) ---------- */
+.band {
+  display: flex;
+  align-items: flex-end;
+  gap: 1.6rem;
+  min-height: 34rem;
+  padding: 6vw 5vw;
+  color: var(--white);
+  background: var(--black);
+  text-decoration: none;
+  position: relative;
+}
+.band--dark  { background: var(--black); color: var(--white); }
+.band--red   { background: var(--red);   color: var(--white); }
+.band--light { background: var(--white); color: var(--black); }
+
+.band__col {
+  flex: 1 1 56%;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 14px;
+  min-width: 0;
+}
+.band__aside { flex: 1 1 32%; min-height: 1px; } /* visuals go here later */
+
+.band__title {
+  font-family: var(--font-head);
+  font-weight: 700;
+  text-transform: uppercase;
+  font-size: clamp(3.2rem, 11.5vw, 9rem);
+  line-height: 0.88;
+  letter-spacing: -0.03em;
+  margin: 0;
+  overflow-wrap: break-word;
+}
+/* One-word titles too long for the column at full size */
+.band__title--long { font-size: clamp(2.4rem, 7.2vw, 6rem); }
+.band__blurb {
+  font-family: var(--font-mono);
+  font-size: 0.96rem;         /* 15.36px */
+  line-height: 1.55;
+  max-width: 24em;
+  margin: 0;
+}
+.band__more {
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  text-decoration: underline;
+  text-underline-offset: 4px;
+}
+
+.band:hover .band__col,
+.band:focus-visible .band__col { animation: jitter 0.15s ease-out; }
+.band:focus-visible { outline: 3px solid currentColor; outline-offset: -10px; }
+
+@keyframes jitter {
+  25% { transform: translate(-2px, 1px) rotate(-0.3deg); }
+  50% { transform: translate(2px, -1px) rotate(0.3deg); }
+  75% { transform: translate(-1px, 0); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .band:hover .band__col, .band:focus-visible .band__col { animation: none; }
+}
+
+@media (max-width: 720px) {
+  .band { flex-direction: column; align-items: stretch; min-height: 0; padding: 4rem 1rem; }
+  .band__aside { display: none; }
+}
+
+/* ---------- Project stub pages ---------- */
+.project {
+  min-height: 100vh;
+  padding: 6vw 5vw;
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+.project__back {
+  font-family: var(--font-mono);
+  font-size: 0.8rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: inherit;
+}
+.project__body {
+  font-family: var(--font-mono);
+  font-size: 0.96rem;
+  line-height: 1.55;
+  max-width: 40em;
+  margin: 0;
+  opacity: 0.8;
+}
+
+.site-foot {
+  background: var(--black);
+  color: var(--white);
+  font-family: var(--font-mono);
+  font-size: 0.8rem;
+  text-align: center;
+  padding: 2rem 1rem;
+}
+.site-foot a { color: inherit; }
