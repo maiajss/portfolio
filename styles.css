@@ -138,8 +138,9 @@ img { max-width: 100%; height: auto; display: block; }
   line-height: 0.88;
   letter-spacing: -0.03em;
   /* Tight line-height leaves the caps hanging below the box, so add a bit
-     back to make the visible gap above the subtext match the one below it */
-  margin: 0 0 calc(0.045em + 1px);
+     back so the gap above the subtext matches the gap from the subtext baseline
+     to the link (about 27px on desktop) */
+  margin: 0 0 calc(0.045em + 4px);
   overflow-wrap: break-word;
 }
 /* One-word titles too long for the column at full size */
