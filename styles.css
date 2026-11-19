@@ -52,11 +52,7 @@ img { max-width: 100%; height: auto; display: block; }
   line-height: 1.55;
   margin: 0 0 0.9rem;
 }
-.intro__hi {
-  font-size: 0.96rem;
-  margin: 1.2rem 0 0;
-}
-.intro__hi a { color: inherit; }
+
 
 /* About section at the foot of the page: text left, illustration right.
    Side padding matches the project bands so the text lines up with them. */
@@ -77,6 +73,8 @@ img { max-width: 100%; height: auto; display: block; }
   margin: 0;
   text-align: left;
 }
+.about__text .about__hi { margin-top: 1.55em; }   /* one blank line below the paragraph */
+.about__hi a { color: inherit; }
 .about__art {
   flex: 0 1 420px;
   width: min(420px, 40vw);
