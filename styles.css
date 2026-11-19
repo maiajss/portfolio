@@ -163,6 +163,12 @@ img { max-width: 100%; height: auto; display: block; }
 }
 /* One-word titles too long for the column at full size */
 .band__title--long { font-size: clamp(2.4rem, 7.2vw, 6rem); }
+/* BETTER WITH SWEAT: open the tracking slightly and even out E-T, T-T, T-E
+   (each span's letter-spacing sets the gap after that letter) */
+.band__title--better { letter-spacing: 0.01em; }
+.band__title--better .k-et { letter-spacing: 0.017em; }
+.band__title--better .k-tt { letter-spacing: 0.03em; }
+.band__title--better .k-te { letter-spacing: -0.018em; }
 .band__blurb {
   font-family: var(--font-mono);
   font-size: 0.96rem;         /* 15.36px */
