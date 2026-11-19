@@ -116,6 +116,24 @@ img { max-width: 100%; height: auto; display: block; }
   opacity: 0.4;
   pointer-events: none;
 }
+/* Moving background (a looping video instead of a GIF, far smaller).
+   Same treatment as the still images; it covers the still poster. */
+.band__media {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  z-index: -1;
+  filter: grayscale(1) contrast(1.35);
+  opacity: 0.4;
+  pointer-events: none;
+}
+.band--img:has(.band__media)::before { display: none; }
+@media (prefers-reduced-motion: reduce) {
+  .band__media { display: none; }
+  .band--img:has(.band__media)::before { display: block; }
+}
 .band--dark  { background: var(--black); color: var(--white); }
 .band--red   { background: var(--red);   color: var(--white); }
 .band--light { background: var(--white); color: var(--black); }
