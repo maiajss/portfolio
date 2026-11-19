@@ -103,7 +103,7 @@ img { max-width: 100%; height: auto; display: block; }
   text-decoration: none;
   position: relative;
 }
-/* Optional background image: gritty, black-and-white, 40% opacity,
+/* Optional background image: gritty, full color, 40% opacity,
    set per band with style="--band-img: url(...)" */
 .band--img { isolation: isolate; overflow: hidden; }
 .band--img::before {
@@ -112,7 +112,7 @@ img { max-width: 100%; height: auto; display: block; }
   inset: 0;
   z-index: -1;
   background: var(--band-img) center / cover no-repeat;
-  filter: grayscale(1) contrast(1.35);
+  filter: contrast(1.35);     /* full color, a little extra grit */
   opacity: 0.4;
   pointer-events: none;
 }
@@ -129,7 +129,7 @@ img { max-width: 100%; height: auto; display: block; }
   opacity: 0.4;
   pointer-events: none;
 }
-.band--img:has(.band__media)::before { display: none; }
+.band--img:has(.band__media)::before { display: none; filter: grayscale(1) contrast(1.35); }
 @media (prefers-reduced-motion: reduce) {
   .band__media { display: none; }
   .band--img:has(.band__media)::before { display: block; }
