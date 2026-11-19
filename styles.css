@@ -319,6 +319,30 @@ img { max-width: 100%; height: auto; display: block; }
 .project__grid img { display: block; width: 100%; height: auto; aspect-ratio: 250 / 371; object-fit: cover; }
 @media (max-width: 720px) { .project__grid { grid-template-columns: repeat(3, 1fr); gap: 0.6rem; } }
 .project__video iframe { position: absolute; inset: 0; width: 100%; height: 100%; border: 0; }
+/* Custom-thumbnail video: a button showing the image and a play mark */
+.project__video--poster { display: block; padding: 0; border: 0; cursor: pointer; overflow: hidden; }
+.project__video--poster img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+.project__play {
+  position: absolute;
+  left: 50%; top: 72%;          /* below the title card, clear of the lettering */
+  width: 84px; height: 84px;
+  margin: -42px 0 0 -42px;
+  border-radius: 50%;
+  background: var(--red);
+  transition: transform .2s ease;
+}
+.project__play::after {
+  content: "";
+  position: absolute;
+  left: 34px; top: 26px;
+  border-style: solid;
+  border-width: 16px 0 16px 26px;
+  border-color: transparent transparent transparent var(--white);
+}
+.project__video--poster:hover .project__play,
+.project__video--poster:focus-visible .project__play { transform: scale(1.08); }
+.project__video--poster:focus-visible { outline: 3px solid var(--white); outline-offset: 3px; }
+@media (max-width: 720px) { .project__play { transform: scale(.75); } .project__video--poster:hover .project__play { transform: scale(.8); } }
 .project__press ul { list-style: none; margin: 0; padding: 0; display: flex; gap: 1.5rem; flex-wrap: wrap; }
 .project__press a {
   color: inherit;
