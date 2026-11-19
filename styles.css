@@ -169,6 +169,8 @@ img { max-width: 100%; height: auto; display: block; }
 .band__title--better .k-et { letter-spacing: 0.017em; }
 .band__title--better .k-tt { letter-spacing: 0.03em; }
 .band__title--better .k-te { letter-spacing: -0.018em; }
+/* GO FETCH ADVENTURE: open E-T to match F-E */
+.band__title .k-fetch-e { letter-spacing: 0.025em; }
 .band__blurb {
   font-family: var(--font-mono);
   font-size: 0.96rem;         /* 15.36px */
