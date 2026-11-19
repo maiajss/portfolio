@@ -317,9 +317,41 @@ img { max-width: 100%; height: auto; display: block; }
   gap: 1rem;
 }
 .project__grid img { display: block; width: 100%; height: auto; aspect-ratio: 250 / 371; object-fit: cover; }
-/* App screens in phone mockups: stacked, each at its full 500px size */
-.project__grid--phones { display: flex; flex-direction: column; gap: 1.5rem; }
-.project__grid--phones img { aspect-ratio: auto; object-fit: contain; width: min(500px, 100%); }
+/* Carousel: 2.5 images in view on desktop (1.5 on phones), arrow buttons below */
+.carousel { width: 100%; max-width: 1200px; }
+.carousel__track {
+  --gap: 1.5rem;
+  --show: 2.5;
+  display: flex;
+  gap: var(--gap);
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  scrollbar-width: none;
+}
+.carousel__track::-webkit-scrollbar { display: none; }
+.carousel__track > img {
+  flex: 0 0 auto;
+  width: calc((100% - (var(--show) - 0.5) * var(--gap)) / var(--show));
+  min-width: 0;
+  max-width: 500px;           /* never larger than the source files */
+  height: auto;
+  scroll-snap-align: start;
+}
+.carousel__track:focus-visible { outline: 2px solid currentColor; outline-offset: 4px; }
+.carousel__controls { display: flex; gap: 0.75rem; margin-top: 1.25rem; }
+.carousel__btn {
+  width: 48px; height: 48px;
+  border: 1px solid currentColor;
+  border-radius: 50%;
+  background: transparent;
+  color: inherit;
+  font: 500 1.1rem var(--font-mono);
+  cursor: pointer;
+  transition: background .15s ease, color .15s ease, opacity .15s ease;
+}
+.carousel__btn:hover:not(:disabled) { background: var(--white); color: var(--black); }
+.carousel__btn:disabled { opacity: 0.3; cursor: default; }
+@media (max-width: 720px) { .carousel__track { --show: 1.5; --gap: 1rem; } }
 @media (max-width: 720px) { .project__grid { grid-template-columns: repeat(3, 1fr); gap: 0.6rem; } }
 .project__video iframe { position: absolute; inset: 0; width: 100%; height: 100%; border: 0; }
 /* Custom-thumbnail video: a button showing the image and a play mark */
