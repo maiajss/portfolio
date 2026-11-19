@@ -137,7 +137,9 @@ img { max-width: 100%; height: auto; display: block; }
   font-size: clamp(3.2rem, 11.5vw, 9rem);
   line-height: 0.88;
   letter-spacing: -0.03em;
-  margin: 0;
+  /* Tight line-height leaves the caps hanging below the box, so add a bit
+     back to make the visible gap above the subtext match the one below it */
+  margin: 0 0 calc(0.045em + 1px);
   overflow-wrap: break-word;
 }
 /* One-word titles too long for the column at full size */
