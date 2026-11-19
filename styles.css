@@ -21,7 +21,7 @@ img { max-width: 100%; height: auto; display: block; }
   color: var(--ink);
   font-family: var(--font-type);
   text-align: center;
-  padding: 3rem 1rem 4.5rem;
+  padding: 3rem 1rem;          /* same space above the logo and below the bio */
 }
 .intro__art {
   width: min(420px, 80vw);
@@ -52,6 +52,7 @@ img { max-width: 100%; height: auto; display: block; }
   line-height: 1.55;
   margin: 0 0 0.9rem;
 }
+.intro__bio p:last-child { margin-bottom: 0; }
 
 
 /* About section at the foot of the page: text left, illustration right.
