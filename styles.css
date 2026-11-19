@@ -317,11 +317,10 @@ img { max-width: 100%; height: auto; display: block; }
   gap: 1rem;
 }
 .project__grid img { display: block; width: 100%; height: auto; aspect-ratio: 250 / 371; object-fit: cover; }
-/* App screens in phone mockups: five across, two on phones */
-.project__grid--phones { grid-template-columns: repeat(5, 1fr); }
-.project__grid--phones img { aspect-ratio: auto; object-fit: contain; }
+/* App screens in phone mockups: stacked, each at its full 500px size */
+.project__grid--phones { display: flex; flex-direction: column; gap: 1.5rem; }
+.project__grid--phones img { aspect-ratio: auto; object-fit: contain; width: min(500px, 100%); }
 @media (max-width: 720px) { .project__grid { grid-template-columns: repeat(3, 1fr); gap: 0.6rem; } }
-@media (max-width: 720px) { .project__grid--phones { grid-template-columns: repeat(2, 1fr); } }
 .project__video iframe { position: absolute; inset: 0; width: 100%; height: 100%; border: 0; }
 /* Custom-thumbnail video: a button showing the image and a play mark */
 .project__video--poster { display: block; padding: 0; border: 0; cursor: pointer; overflow: hidden; }
