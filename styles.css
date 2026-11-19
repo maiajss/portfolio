@@ -32,12 +32,12 @@ img { max-width: 100%; height: auto; display: block; }
   width: 200px;
   margin: 0 auto 2rem;
 }
-/* Header text is set at half the support page's sizes */
+/* Header and About text match the project subtext size (0.96rem) */
 .intro h1 {
   font-family: var(--font-type);
   font-weight: 500;           /* DM Mono's heaviest weight */
-  font-size: 1.05rem;         /* 16.8px */
-  line-height: 1.3;
+  font-size: 0.96rem;         /* same as project subtext */
+  line-height: 1.55;
   margin: 0 auto 1.2rem;
   max-width: 1080px;
 }
@@ -46,12 +46,12 @@ img { max-width: 100%; height: auto; display: block; }
   margin: 0 auto;
 }
 .intro__bio p {
-  font-size: 0.7rem;          /* 11.2px */
-  line-height: 1.6;
+  font-size: 0.96rem;         /* same as project subtext */
+  line-height: 1.55;
   margin: 0 0 0.9rem;
 }
 .intro__hi {
-  font-size: 0.7rem;
+  font-size: 0.96rem;
   margin: 1.2rem 0 0;
 }
 .intro__hi a { color: inherit; }
@@ -69,8 +69,8 @@ img { max-width: 100%; height: auto; display: block; }
 }
 .about__text { flex: 1 1 50%; min-width: 0; }
 .about__text p {
-  font-size: 0.7rem;          /* matches the header bio */
-  line-height: 1.6;
+  font-size: 0.96rem;         /* same as project subtext */
+  line-height: 1.55;
   max-width: 40rem;
   margin: 0;
   text-align: left;
