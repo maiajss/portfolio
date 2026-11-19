@@ -111,7 +111,7 @@ img { max-width: 100%; height: auto; display: block; }
   position: absolute;
   inset: 0;
   z-index: -1;
-  background: var(--band-img) center / cover no-repeat;
+  background: var(--band-img) var(--band-img-pos, center) / cover no-repeat;
   filter: contrast(1.35);     /* full color, a little extra grit */
   opacity: var(--band-img-opacity, 0.4);   /* override per band */
   pointer-events: none;
