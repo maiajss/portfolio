@@ -113,7 +113,7 @@ img { max-width: 100%; height: auto; display: block; }
   z-index: -1;
   background: var(--band-img) center / cover no-repeat;
   filter: contrast(1.35);     /* full color, a little extra grit */
-  opacity: 0.4;
+  opacity: var(--band-img-opacity, 0.4);   /* override per band */
   pointer-events: none;
 }
 /* Moving background (a looping video instead of a GIF, far smaller).
