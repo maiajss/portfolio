@@ -288,6 +288,7 @@ img { max-width: 100%; height: auto; display: block; }
   letter-spacing: 0.08em;
   text-transform: uppercase;
 }
+.project__credits--foot { margin-top: 1.5rem; }   /* credits placed after the work */
 .project__press { font-family: var(--font-mono); }
 .project__label {
   font-size: 0.8rem;
