@@ -127,7 +127,7 @@ img { max-width: 100%; height: auto; display: block; }
   inset: 0;
   z-index: -1;
   background: var(--backdrop);
-  opacity: 0.4;
+  opacity: var(--band-img-opacity, 0.4);
   pointer-events: none;
 }
 .band__product {
