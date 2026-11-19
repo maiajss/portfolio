@@ -281,6 +281,7 @@ img { max-width: 100%; height: auto; display: block; }
   aspect-ratio: 16 / 9;
   background: #000;
 }
+.project__img { display: block; width: 100%; max-width: 1200px; height: auto; }
 .project__video iframe { position: absolute; inset: 0; width: 100%; height: 100%; border: 0; }
 .project__press ul { list-style: none; margin: 0; padding: 0; display: flex; gap: 1.5rem; flex-wrap: wrap; }
 .project__press a {
