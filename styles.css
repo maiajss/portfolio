@@ -173,7 +173,7 @@ img { max-width: 100%; height: auto; display: block; }
   font-family: var(--font-mono);
   font-size: 0.96rem;         /* 15.36px */
   line-height: 1.55;
-  max-width: 28em;
+  max-width: none;           /* one line on desktop; only hand-placed breaks */
   margin: 0;
 }
 .band__more {
