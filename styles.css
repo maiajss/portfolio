@@ -79,11 +79,14 @@ img { max-width: 100%; height: auto; display: block; }
 .about__art {
   flex: 0 1 420px;
   width: min(420px, 40vw);
+  height: auto;               /* always keep the drawing's own proportions */
   mix-blend-mode: multiply;
 }
 @media (max-width: 640px) {
   .about { flex-direction: column; align-items: flex-start; padding: 4rem 1rem; }
-  .about__art { width: min(320px, 80vw); align-self: center; }
+  /* In the stacked layout, flex sizing would act on height and squash the
+     drawing, so take it out of flex sizing entirely. */
+  .about__art { flex: none; width: min(320px, 80vw); height: auto; align-self: center; }
 }
 
 @media (max-width: 640px) {
@@ -143,6 +146,17 @@ img { max-width: 100%; height: auto; display: block; }
 }
 @media (max-width: 720px) {
   .band__product { left: 0; width: 100%; }
+}
+/* Notes on phones: the notebook is fully opaque, so size it by width (about
+   a third of the band), tuck it against the right edge (its right side sits at
+   71% of the image, hence the 26% nudge) and keep the text in the left 60%. */
+@media (max-width: 720px) {
+  .band--notes .band__product {
+    left: auto; right: 0; top: 50%; bottom: auto;
+    width: 85%; height: auto;
+    transform: translate(26%, -50%);
+  }
+  .band--notes .band__blurb { max-width: 60%; }
 }
 
 /* Moving background (a looping video instead of a GIF, far smaller).
@@ -419,4 +433,7 @@ img { max-width: 100%; height: auto; display: block; }
 h1, h2, p { text-wrap: pretty; }
 /* Hand-placed header line breaks apply on wide screens only */
 @media (max-width: 640px) { .br-wide { display: none; } }
+/* A break that only applies once the bands stack on phones */
+.br-narrow { display: none; }
+@media (max-width: 720px) { .br-narrow { display: inline; } }
 .nowrap { white-space: nowrap; }
