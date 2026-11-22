@@ -256,7 +256,12 @@ img { max-width: 100%; height: auto; display: block; }
   flex-direction: column;
   gap: 1.5rem;
 }
+/* Kept above the title: the headline font's tall glyph boxes reach up over
+   this link on desktop and would otherwise swallow the click. */
 .project__back {
+  position: relative;
+  z-index: 1;
+  align-self: flex-start;     /* clickable on the words, not the whole row */
   font-family: var(--font-mono);
   font-size: 0.8rem;
   letter-spacing: 0.08em;
