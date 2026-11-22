@@ -433,4 +433,7 @@ img { max-width: 100%; height: auto; display: block; }
 h1, h2, p { text-wrap: pretty; }
 /* Hand-placed header line breaks apply on wide screens only */
 @media (max-width: 640px) { .br-wide { display: none; } }
+/* A break that only applies once the bands stack on phones */
+.br-narrow { display: none; }
+@media (max-width: 720px) { .br-narrow { display: inline; } }
 .nowrap { white-space: nowrap; }
