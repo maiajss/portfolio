@@ -1,0 +1,670 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Maia Swift Desktop</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<meta name="description" content="Portfolio of Maia Swift, art director. Version 2 test: every project is a window on a desktop.">
+<meta name="robots" content="noindex">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="icon" href="../favicon.ico" sizes="any">
+<link rel="icon" href="../assets/icons/favicon.svg" type="image/svg+xml">
+<style>
+/* Layout: the site is a computer desktop. A rotating wallpaper sits fixed behind
+   everything; each project is a window you can drag, raise, enlarge or close;
+   a MAIA! folder opens a TextEdit window with the About text.
+   One deliberate light, Mac-like look in every theme. */
+:root {
+  --ink: #1d1d1f;
+  --muted: #6e6e73;
+  --chrome: #e4e4e4;
+  --chrome-dim: #d6d6d6;
+  --chrome-edge: #bdbdbd;
+  --glass: rgba(246,246,246,.72);
+  --select: #2f6fe4;
+  --folder-back: #5aa8e8;
+  --folder-front: #84c3f4;
+  --folder-front-2: #6eb5f0;
+  --folder-mark: #3d8bd0;
+  --shadow: 0 18px 44px rgba(0,0,0,.30), 0 2px 6px rgba(0,0,0,.16);
+  --shadow-lift: 0 30px 70px rgba(0,0,0,.38), 0 4px 12px rgba(0,0,0,.18);
+  --font-ui: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Helvetica Neue", Helvetica, Arial, sans-serif;
+  --font-doc: "Helvetica Neue", Helvetica, Arial, sans-serif;
+  --font-type: "DM Mono", "Courier New", monospace;
+  --menu-h: 28px;
+  color-scheme: light;
+}
+*, *::before, *::after { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; overflow-x: clip; }
+[hidden] { display: none !important; }
+body {
+  margin: 0;
+  min-height: 100vh;
+  background: #8a7a68;
+  color: var(--ink);
+  font-family: var(--font-ui);
+  overflow-x: hidden;
+}
+img, video { display: block; max-width: 100%; }
+button { font: inherit; color: inherit; }
+
+/* ---------- Wallpaper ---------- */
+.wall { position: fixed; inset: 0; z-index: 0; overflow: hidden; background: #8a7a68; }
+.wall img {
+  position: absolute; inset: 0;
+  width: 100%; height: 100%;
+  max-width: none;
+  object-fit: cover;
+  opacity: 0;
+  transition: opacity 1.6s ease;
+}
+.wall img.is-on { opacity: 1; }
+
+/* ---------- Menu bar ---------- */
+.menu {
+  position: sticky;
+  top: 0;
+  z-index: 100000;
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  height: calc(var(--menu-h) + env(safe-area-inset-top, 0px));
+  padding-top: env(safe-area-inset-top, 0px);
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+  background: var(--glass);
+  backdrop-filter: blur(20px) saturate(1.4);
+  -webkit-backdrop-filter: blur(20px) saturate(1.4);
+  font-size: 13px;
+  white-space: nowrap;
+}
+.menu__logo {
+  width: 44px; height: 24px; flex: none;
+  background: var(--ink);
+  -webkit-mask: url("../assets/maia.png") center / contain no-repeat;
+  mask: url("../assets/maia.png") center / contain no-repeat;
+}
+.menu__name { font-weight: 700; }
+.menu__item {
+  background: none; border: 0; padding: 2px 8px; margin: 0 -8px;
+  border-radius: 4px; cursor: pointer;
+}
+.menu__item:hover { background: rgba(0,0,0,.08); }
+.menu__spacer { flex: 1 1 auto; }
+.menu__hint { color: var(--muted); }
+.menu__clock { font-variant-numeric: tabular-nums; }
+@media (max-width: 700px) {
+  .menu { gap: 14px; font-size: 12.5px; }
+  .menu__name, .menu__hint, .menu__role { display: none; }
+}
+
+/* ---------- Desk ---------- */
+.desk {
+  position: relative;
+  z-index: 1;
+  margin-left: max(16px, env(safe-area-inset-left, 0px), 3vw);
+  margin-right: max(16px, env(safe-area-inset-right, 0px), 3vw);
+  margin-top: 22px;
+  min-height: calc(100vh - var(--menu-h) - 60px);
+}
+
+/* ---------- Desktop icon: the MAIA! folder ---------- */
+.icon {
+  position: absolute;
+  top: 0; right: 0;
+  z-index: 5;
+  width: 104px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  padding: 6px 4px;
+  background: none;
+  border: 0;
+  border-radius: 8px;
+  cursor: default;
+  user-select: none;
+  -webkit-user-select: none;
+}
+.icon__folder { position: relative; width: 78px; height: 64px; }
+.icon__folder svg { width: 100%; height: 100%; display: block; filter: drop-shadow(0 2px 3px rgba(0,0,0,.25)); }
+.icon__mark {
+  position: absolute;
+  left: 50%; top: 58%;
+  width: 46px; height: 25px;
+  transform: translate(-50%, -50%);
+  background: var(--folder-mark);
+  opacity: .9;
+  -webkit-mask: url("../assets/maia.png") center / contain no-repeat;
+  mask: url("../assets/maia.png") center / contain no-repeat;
+}
+.icon__label {
+  font-size: 12px;
+  font-weight: 600;
+  color: #fff;
+  text-shadow: 0 1px 2px rgba(0,0,0,.7), 0 0 6px rgba(0,0,0,.35);
+  padding: 1px 6px;
+  border-radius: 4px;
+  line-height: 1.3;
+}
+.icon.is-selected .icon__folder { background: rgba(0,0,0,.18); border-radius: 6px; }
+.icon.is-selected .icon__label { background: var(--select); text-shadow: none; }
+.icon:focus-visible { outline: 2px solid #fff; outline-offset: 2px; }
+
+/* ---------- Windows ---------- */
+.win {
+  position: absolute;
+  top: 0; left: 0;
+  display: flex;
+  flex-direction: column;
+  border-radius: 10px;
+  overflow: hidden;
+  background: #000;
+  box-shadow: var(--shadow);
+  outline: 0.5px solid rgba(0,0,0,.3);
+  transition: box-shadow .2s ease, width .25s ease, transform .25s ease;
+  will-change: transform;
+}
+.win.is-dragging { box-shadow: var(--shadow-lift); transition: box-shadow .2s ease; }
+.win.is-dragging, .win.is-dragging .win__bar { cursor: grabbing; }
+
+.win__bar {
+  flex: none;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  height: 24px;
+  padding: 0 8px;
+  background: var(--chrome-dim);
+  border-bottom: 0.5px solid var(--chrome-edge);
+  font-size: 11px;
+  font-weight: 600;
+  color: #4a4a4a;
+  cursor: grab;
+  user-select: none;
+  -webkit-user-select: none;
+  touch-action: none;
+}
+.win.is-front .win__bar { background: linear-gradient(#ececec, var(--chrome)); color: #1d1d1f; }
+.win__dots { display: flex; gap: 5px; flex: none; }
+.win__dot {
+  width: 12px; height: 12px;
+  border-radius: 50%;
+  border: 0;
+  padding: 0;
+  background: #4d4d4d;
+  color: transparent;
+  font: 700 10px/12px var(--font-ui);
+  text-align: center;
+  cursor: pointer;
+}
+.win__bar:hover .win__dot, .win__dot:focus-visible { color: #d6d6d6; }
+.win__name {
+  flex: 1 1 auto;
+  min-width: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.win__open {
+  flex: none;
+  font-weight: 500;
+  font-size: 10.5px;
+  color: #1d1d1f;
+  text-decoration: none;
+  padding: 1px 7px;
+  border-radius: 4px;
+  border: 0.5px solid #a9a9a9;
+  background: #f4f4f4;
+}
+.win__open:hover { background: #fff; }
+.win__dot:focus-visible, .win__open:focus-visible, .menu__item:focus-visible, .dock__item:focus-visible {
+  outline: 2px solid var(--select);
+  outline-offset: 2px;
+}
+
+.win__body { position: relative; display: block; background: var(--backdrop, #000); cursor: pointer; }
+.win__body img, .win__body video {
+  width: 100%;
+  height: auto;
+  pointer-events: none;
+  user-select: none;
+  -webkit-user-drag: none;
+}
+.win__body--product img { padding: 4% 6%; }
+
+/* ---------- TextEdit window ---------- */
+.win--doc { background: #fff; }
+.doc__tools {
+  flex: none;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  height: 30px;
+  padding: 0 10px;
+  background: #f3f3f3;
+  border-bottom: 0.5px solid #d0d0d0;
+  font-size: 11px;
+  color: #3a3a3a;
+  overflow: hidden;
+  white-space: nowrap;
+  user-select: none;
+  -webkit-user-select: none;
+}
+.doc__pick {
+  border: 0.5px solid #c2c2c2;
+  border-radius: 4px;
+  background: #fff;
+  padding: 1px 6px;
+}
+.doc__pick::after { content: " \2304"; color: #888; }
+.doc__fmt { display: inline-flex; gap: 8px; font-family: Georgia, serif; font-size: 12px; }
+.doc__page {
+  padding: 22px 26px 26px;
+  max-height: min(62vh, 560px);
+  overflow: auto;
+  font-family: var(--font-doc);
+  font-size: 13px;
+  line-height: 1.55;
+  color: #111;
+  user-select: text;
+}
+.doc__page p { margin: 0 0 1em; max-width: 62ch; }
+.doc__page p:last-child { margin-bottom: 0; }
+.doc__page a { color: inherit; }
+.doc__head { font-weight: 700; }
+.doc__art { width: min(220px, 55%); height: auto; mix-blend-mode: multiply; margin: 0 0 14px; }
+
+/* ---------- Dock (closed windows) ---------- */
+.dock {
+  position: fixed;
+  left: 0; right: 0;
+  bottom: max(14px, env(safe-area-inset-bottom, 0px));
+  z-index: 100001;
+  display: flex;
+  justify-content: center;
+  pointer-events: none;
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+}
+.dock__inner {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 6px;
+  padding: 7px;
+  border-radius: 14px;
+  background: var(--glass);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  box-shadow: 0 8px 24px rgba(0,0,0,.25);
+  pointer-events: auto;
+}
+.dock__item {
+  font-size: 11.5px;
+  font-weight: 600;
+  background: #fff;
+  border: 0.5px solid #c4c4c4;
+  border-radius: 7px;
+  padding: 5px 9px;
+  cursor: pointer;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .win, .wall img { transition: none; }
+}
+</style>
+</head>
+<body>
+  <div class="wall" id="wall" aria-hidden="true">
+    <!-- Placeholder wallpapers cropped from the Go Fetch posters -->
+    <img class="is-on" src="wallpapers/canyon.jpg" alt="" width="1440" height="900">
+    <img src="wallpapers/tree.jpg" alt="" width="1440" height="900" loading="lazy">
+    <img src="wallpapers/snow.jpg" alt="" width="1440" height="900" loading="lazy">
+    <img src="wallpapers/family.jpg" alt="" width="1440" height="900" loading="lazy">
+  </div>
+
+  <nav class="menu" aria-label="Menu bar">
+    <span class="menu__logo" role="img" aria-label="MAIA!"></span>
+    <span class="menu__name">Maia Swift</span>
+    <span class="menu__role">Art Director</span>
+    <button class="menu__item" id="cleanUp" type="button">Clean Up</button>
+    <button class="menu__item" id="nextWall" type="button">Wallpaper</button>
+    <span class="menu__spacer"></span>
+    <span class="menu__hint">Drag a window by its title bar</span>
+    <span class="menu__clock" id="clock"></span>
+  </nav>
+
+  <main class="desk" id="desk" aria-label="Projects">
+    <button class="icon" id="folder" type="button" aria-label="Open About Maia">
+      <span class="icon__folder" aria-hidden="true">
+        <svg viewBox="0 0 78 64">
+          <path d="M4 10a5 5 0 0 1 5-5h18c2 0 3 .6 4.2 1.8L35 11h34a5 5 0 0 1 5 5v39a5 5 0 0 1-5 5H9a5 5 0 0 1-5-5z" fill="var(--folder-back)"/>
+          <defs><linearGradient id="ff" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="var(--folder-front)"/><stop offset="1" stop-color="var(--folder-front-2)"/></linearGradient></defs>
+          <path d="M4 22a5 5 0 0 1 5-5h60a5 5 0 0 1 5 5v33a5 5 0 0 1-5 5H9a5 5 0 0 1-5-5z" fill="url(#ff)"/>
+          <path d="M9 17.5h60" stroke="rgba(255,255,255,.55)" stroke-width="1"/>
+        </svg>
+        <span class="icon__mark"></span>
+      </span>
+      <span class="icon__label">About Maia</span>
+    </button>
+
+    <article class="win" data-id="good">
+      <div class="win__bar"><span class="win__dots"><button class="win__dot" data-act="close" aria-label="Close" type="button">×</button><button class="win__dot" data-act="zoom" aria-label="Enlarge" type="button">+</button></span>
+        <span class="win__name">The Good $#!T.mov</span>
+        <a class="win__open" href="../projects/the-good-shit.html">Open</a></div>
+      <a class="win__body" href="../projects/the-good-shit.html" tabindex="-1"><img src="../assets/projects/the-good-shit.jpg" alt="The Good $#!T: a history lesson, but make it Miller Time" width="1600" height="812"></a>
+    </article>
+
+    <article class="win" data-id="nature">
+      <div class="win__bar"><span class="win__dots"><button class="win__dot" data-act="close" aria-label="Close" type="button">×</button><button class="win__dot" data-act="zoom" aria-label="Enlarge" type="button">+</button></span>
+        <span class="win__name">Nature Is Speaking.mp4</span>
+        <a class="win__open" href="../projects/nature-is-speaking.html">Open</a></div>
+      <a class="win__body" href="../projects/nature-is-speaking.html" tabindex="-1">
+        <video autoplay muted loop playsinline preload="auto" poster="../assets/projects/nature-is-speaking.jpg" width="750" height="468" aria-label="Nature Is Speaking">
+          <source src="../assets/projects/nature-is-speaking.webm" type="video/webm">
+          <source src="../assets/projects/nature-is-speaking.mp4" type="video/mp4">
+        </video></a>
+    </article>
+
+    <article class="win" data-id="beer">
+      <div class="win__bar"><span class="win__dots"><button class="win__dot" data-act="close" aria-label="Close" type="button">×</button><button class="win__dot" data-act="zoom" aria-label="Enlarge" type="button">+</button></span>
+        <span class="win__name">#BeerYourselfie.jpg</span>
+        <a class="win__open" href="../projects/beeryourselfie.html">Open</a></div>
+      <a class="win__body" href="../projects/beeryourselfie.html" tabindex="-1"><img src="../assets/projects/beeryourselfie.jpg" alt="#BeerYourselfie: a selfie stick with a beer on it" width="1500" height="468"></a>
+    </article>
+
+    <article class="win" data-id="sweat">
+      <div class="win__bar"><span class="win__dots"><button class="win__dot" data-act="close" aria-label="Close" type="button">×</button><button class="win__dot" data-act="zoom" aria-label="Enlarge" type="button">+</button></span>
+        <span class="win__name">Better With Sweat.jpg</span>
+        <a class="win__open" href="../projects/better-with-sweat.html">Open</a></div>
+      <a class="win__body" href="../projects/better-with-sweat.html" tabindex="-1"><img src="../assets/projects/better-with-sweat.jpg" alt="Better With Sweat: the best reward for hard work" width="750" height="468"></a>
+    </article>
+
+    <article class="win" data-id="prayers">
+      <div class="win__bar"><span class="win__dots"><button class="win__dot" data-act="close" aria-label="Close" type="button">×</button><button class="win__dot" data-act="zoom" aria-label="Enlarge" type="button">+</button></span>
+        <span class="win__name">Prayers For Change.mov</span>
+        <a class="win__open" href="../projects/prayers-for-change.html">Open</a></div>
+      <a class="win__body" href="../projects/prayers-for-change.html" tabindex="-1"><img src="../assets/projects/prayers-for-change.jpg" alt="Prayers For Change: now thoughts and prayers can create real change" width="1000" height="625"></a>
+    </article>
+
+    <article class="win" data-id="tama">
+      <div class="win__bar"><span class="win__dots"><button class="win__dot" data-act="close" aria-label="Close" type="button">×</button><button class="win__dot" data-act="zoom" aria-label="Enlarge" type="button">+</button></span>
+        <span class="win__name">Tamacare.app</span>
+        <a class="win__open" href="../projects/tamacare.html">Open</a></div>
+      <a class="win__body win__body--product" href="../projects/tamacare.html" tabindex="-1" style="--backdrop:#f7f7f7"><img src="../assets/projects/tamacare.png" alt="Tamacare: a digital resource for virtual parents" width="1000" height="625"></a>
+    </article>
+
+    <article class="win" data-id="fetch">
+      <div class="win__bar"><span class="win__dots"><button class="win__dot" data-act="close" aria-label="Close" type="button">×</button><button class="win__dot" data-act="zoom" aria-label="Enlarge" type="button">+</button></span>
+        <span class="win__name">Go Fetch Adventure.jpg</span>
+        <a class="win__open" href="../projects/go-fetch-adventure.html">Open</a></div>
+      <a class="win__body" href="../projects/go-fetch-adventure.html" tabindex="-1"><img src="../assets/projects/go-fetch-adventure.jpg" alt="Go Fetch Adventure: this isn't a pound, it's a vacation destination" width="750" height="468"></a>
+    </article>
+
+    <article class="win" data-id="notes">
+      <div class="win__bar"><span class="win__dots"><button class="win__dot" data-act="close" aria-label="Close" type="button">×</button><button class="win__dot" data-act="zoom" aria-label="Enlarge" type="button">+</button></span>
+        <span class="win__name">Notes.txt</span>
+        <a class="win__open" href="../projects/notes.html">Open</a></div>
+      <a class="win__body win__body--product" href="../projects/notes.html" tabindex="-1" style="--backdrop:#f5f1eb"><img src="../assets/projects/notes.png" alt="Notes: daily reminders turned full-on philosophy" width="1148" height="717"></a>
+    </article>
+
+    <article class="win win--doc" data-id="about" hidden aria-label="About Maia">
+      <div class="win__bar"><span class="win__dots"><button class="win__dot" data-act="close" aria-label="Close" type="button">×</button><button class="win__dot" data-act="zoom" aria-label="Enlarge" type="button">+</button></span>
+        <span class="win__name">About Maia.rtf</span></div>
+      <div class="doc__tools" aria-hidden="true">
+        <span class="doc__pick">Helvetica Neue</span>
+        <span class="doc__pick">Regular</span>
+        <span class="doc__pick">13</span>
+        <span class="doc__fmt"><b>B</b><i>I</i><u>U</u></span>
+      </div>
+      <div class="doc__page">
+        <img class="doc__art" src="../assets/side.png" alt="Line drawing of Maia in sunglasses" width="900" height="695" loading="lazy">
+        <p class="doc__head">I&rsquo;m an art director &amp; this is my portfolio.</p>
+        <p>Born into a family of artists and writers sparked a lifelong obsession with the human&nbsp;condition.</p>
+        <p>Outside of advertising I host figure drawing classes, curate heirlooms, wander off-grid, and get into &lsquo;good&nbsp;trouble.&rsquo;</p>
+        <p>I started my career at TBWA\MAL under the direction of Lee Clow after being awarded the &lsquo;Lee Clow Endowed&rsquo; scholarship at Art Center College of Design in Pasadena, and eventually joined the team at Chiat\Day in LA. Since then, I&rsquo;ve popped over to the East Coast, working at JWT, Digitas, DDB, Grey NY, and remote gigs across the UK and&nbsp;Europe.</p>
+        <p>Say hi: <a href="mailto:maia.swift@gmail.com">maia.swift@gmail.com</a></p>
+      </div>
+    </article>
+  </main>
+
+  <div class="dock" id="dock" hidden><div class="dock__inner" id="dockInner"></div></div>
+
+<script>
+(function () {
+  var desk = document.getElementById('desk');
+  var folder = document.getElementById('folder');
+  var about = desk.querySelector('[data-id="about"]');
+  var wins = Array.prototype.slice.call(desk.querySelectorAll('.win'));
+  var dock = document.getElementById('dock');
+  var dockInner = document.getElementById('dockInner');
+  var reduceMotion = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  var z = 10;
+
+  /* Layouts in % of desk width: [left, top, width]. Listed bottom to top.
+     The wide layout keeps the top-right corner clear for the folder. */
+  var WIDE = {
+    good:    [0,   1,  42],
+    beer:    [45,  0,  40],
+    nature:  [27, 11,  37],
+    sweat:   [3,  29,  28],
+    tama:    [63, 20,  31],
+    prayers: [31, 37,  31],
+    fetch:   [64, 45,  30],
+    notes:   [5,  53,  30]
+  };
+  var NARROW = {      /* starts below the folder */
+    good:    [0,    0, 94],
+    nature:  [6,   40, 94],
+    beer:    [0,   82, 94],
+    sweat:   [6,  108, 92],
+    prayers: [0,  152, 92],
+    tama:    [6,  196, 94],
+    fetch:   [0,  242, 92],
+    notes:   [6,  286, 94]
+  };
+  var ORDER = ['good','beer','nature','sweat','tama','prayers','fetch','notes'];
+  var mode = null;
+
+  function isNarrow() { return desk.clientWidth < 700; }
+
+  function place(reset) {
+    var W = desk.clientWidth;
+    var narrow = isNarrow();
+    var newMode = narrow ? 'narrow' : 'wide';
+    if (!reset && newMode === mode) { fitDesk(); return; }
+    mode = newMode;
+    var L = narrow ? NARROW : WIDE;
+    var offset = narrow ? 112 : 0;
+    folder.style.right = narrow ? 'auto' : '0';
+    folder.style.left = narrow ? '-4px' : 'auto';
+    ORDER.forEach(function (id, i) {
+      var w = desk.querySelector('[data-id="' + id + '"]');
+      var p = L[id];
+      w.hidden = false;
+      w.classList.remove('is-zoomed');
+      w.style.width = (p[2] * W / 100) + 'px';
+      setPos(w, p[0] * W / 100, p[1] * W / 100 + offset);
+      w.style.zIndex = 10 + i;
+    });
+    about.hidden = true;
+    about.classList.remove('is-zoomed');
+    z = 10 + ORDER.length;
+    front(desk.querySelector('[data-id="notes"]'));
+    renderDock();
+    fitDesk();
+  }
+
+  function setPos(w, x, y) {
+    w._x = x; w._y = y;
+    w.style.transform = 'translate(' + Math.round(x) + 'px,' + Math.round(y) + 'px)';
+  }
+
+  function fitDesk() {
+    var bottom = 0;
+    wins.forEach(function (w) {
+      if (w.hidden) return;
+      bottom = Math.max(bottom, w._y + w.offsetHeight);
+    });
+    desk.style.height = (bottom + 80) + 'px';
+  }
+
+  function front(w) {
+    wins.forEach(function (o) { o.classList.remove('is-front'); });
+    w.style.zIndex = ++z;
+    w.classList.add('is-front');
+  }
+
+  /* Drag by the title bar with any pointer; with a mouse, the whole window. */
+  var drag = null;
+  wins.forEach(function (w) {
+    w.addEventListener('pointerdown', function (e) {
+      front(w);
+      folder.classList.remove('is-selected');
+      if (e.target.closest('button, .win__open, .doc__page')) return;
+      var onBar = !!e.target.closest('.win__bar');
+      if (!onBar && e.pointerType !== 'mouse') return;
+      if (e.button !== 0) return;
+      drag = { w: w, sx: e.clientX, sy: e.clientY, ox: w._x, oy: w._y, moved: false, id: e.pointerId };
+      w.setPointerCapture(e.pointerId);
+      e.preventDefault();
+    });
+    w.addEventListener('pointermove', function (e) {
+      if (!drag || drag.w !== w || e.pointerId !== drag.id) return;
+      var dx = e.clientX - drag.sx, dy = e.clientY - drag.sy;
+      if (!drag.moved && Math.abs(dx) + Math.abs(dy) < 4) return;
+      drag.moved = true;
+      w.classList.add('is-dragging');
+      var W = desk.clientWidth;
+      var x = Math.min(Math.max(drag.ox + dx, -w.offsetWidth * 0.6), W - w.offsetWidth * 0.4);
+      var y = Math.max(drag.oy + dy, 0);
+      setPos(w, x, y);
+      fitDesk();
+    });
+    function end(e) {
+      if (!drag || drag.w !== w) return;
+      var d = drag; drag = null;
+      w.classList.remove('is-dragging');
+      /* A click on the picture without dragging opens the project. */
+      if (!d.moved && e.type === 'pointerup' && !e.target.closest('.win__bar')) {
+        var link = w.querySelector('.win__body[href]');
+        if (link) window.location.href = link.getAttribute('href');
+      }
+    }
+    w.addEventListener('pointerup', end);
+    w.addEventListener('pointercancel', end);
+    var body = w.querySelector('.win__body[href]');
+    /* Mouse clicks are handled above; keyboard activation (detail 0) still follows the link. */
+    if (body) body.addEventListener('click', function (e) { if (e.detail !== 0) e.preventDefault(); });
+
+    w.querySelector('.win__bar').addEventListener('dblclick', function (e) {
+      if (e.target.closest('button, a')) return;
+      zoom(w);
+    });
+    w.querySelector('[data-act="zoom"]').addEventListener('click', function () { zoom(w); });
+    w.querySelector('[data-act="close"]').addEventListener('click', function () {
+      w.hidden = true;
+      if (w !== about) renderDock();
+      fitDesk();
+    });
+  });
+
+  function zoom(w) {
+    var W = desk.clientWidth;
+    if (w.classList.contains('is-zoomed')) {
+      w.classList.remove('is-zoomed');
+      w.style.width = w._prev.w + 'px';
+      setPos(w, w._prev.x, w._prev.y);
+    } else {
+      w._prev = { w: w.offsetWidth, x: w._x, y: w._y };
+      w.classList.add('is-zoomed');
+      var target = Math.min(W, w === about ? 760 : 1100);
+      var top = Math.max(0, window.scrollY - desk.offsetTop + 40);
+      w.style.width = target + 'px';
+      setPos(w, (W - target) / 2, top);
+    }
+    front(w);
+    setTimeout(fitDesk, 280);
+  }
+
+  function renderDock() {
+    dockInner.textContent = '';
+    var closed = wins.filter(function (w) { return w.hidden && w !== about; });
+    dock.hidden = closed.length === 0;
+    closed.forEach(function (w) {
+      var b = document.createElement('button');
+      b.type = 'button';
+      b.className = 'dock__item';
+      b.textContent = w.querySelector('.win__name').textContent;
+      b.addEventListener('click', function () {
+        w.hidden = false;
+        front(w);
+        renderDock();
+        fitDesk();
+      });
+      dockInner.appendChild(b);
+    });
+  }
+
+  /* The folder: click selects, double-click opens (one tap on touch, Enter on keyboard). */
+  function openAbout() {
+    folder.classList.remove('is-selected');
+    if (!about.hidden) { front(about); return; }
+    var W = desk.clientWidth;
+    var width = Math.min(W, 560);
+    about.style.width = width + 'px';
+    about.hidden = false;
+    var x = isNarrow() ? (W - width) / 2 : W - width - 120;
+    var y = Math.max(0, window.scrollY - desk.offsetTop + 30);
+    setPos(about, x, y);
+    front(about);
+    fitDesk();
+  }
+  folder.addEventListener('pointerdown', function (e) { e.stopPropagation(); folder.classList.add('is-selected'); });
+  folder.addEventListener('dblclick', openAbout);
+  folder.addEventListener('click', function (e) {
+    if (e.detail === 0) openAbout();                       /* keyboard */
+    else if (e.pointerType && e.pointerType !== 'mouse') openAbout();
+    else if (!window.matchMedia('(hover: hover)').matches) openAbout();
+  });
+  document.addEventListener('pointerdown', function (e) {
+    if (!e.target.closest('#folder')) folder.classList.remove('is-selected');
+  });
+
+  /* Wallpaper rotation */
+  var walls = Array.prototype.slice.call(document.querySelectorAll('#wall img'));
+  var current = 0;
+  function nextWall() {
+    walls[current].classList.remove('is-on');
+    current = (current + 1) % walls.length;
+    walls[current].loading = 'eager';
+    walls[current].classList.add('is-on');
+  }
+  var timer = reduceMotion ? null : setInterval(nextWall, 9000);
+  document.getElementById('nextWall').addEventListener('click', function () {
+    nextWall();
+    if (timer) { clearInterval(timer); timer = setInterval(nextWall, 9000); }
+  });
+
+  /* Menu bar clock, in the viewer's own time */
+  var clock = document.getElementById('clock');
+  function tick() {
+    var d = new Date();
+    clock.textContent = d.toLocaleDateString(undefined, { weekday: 'short', month: 'short', day: 'numeric' }) + '  ' +
+      d.toLocaleTimeString(undefined, { hour: 'numeric', minute: '2-digit' });
+  }
+  tick(); setInterval(tick, 15000);
+
+  document.getElementById('cleanUp').addEventListener('click', function () { place(true); });
+  var t;
+  window.addEventListener('resize', function () { clearTimeout(t); t = setTimeout(function () { place(false); }, 120); });
+  window.addEventListener('load', fitDesk);
+  place(true);
+})();
+</script>
+</body>
+</html>
