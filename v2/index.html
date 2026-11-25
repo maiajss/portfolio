@@ -287,6 +287,25 @@ button { font: inherit; color: inherit; }
 }
 .win__max svg { position: absolute; inset: -1px; width: 12px; height: 12px; fill: currentColor; }
 .win__max:hover, .win__max[aria-pressed="true"] { background: var(--bar-fg-front); color: var(--chrome); }
+/* Close box: only shown while a window is full page; it returns to the desktop */
+.win__close { display: none; }
+.win.is-full .win__close, .win--doc .win__close {
+  display: block;
+  flex: none;
+  position: relative;
+  z-index: 4;
+  width: 12px; height: 12px;
+  padding: 0;
+  border: 1px solid var(--bar-fg-front);
+  border-radius: 0;
+  background: transparent;
+  color: var(--bar-fg-front);
+  cursor: pointer;
+}
+.win.is-full .win__close::before, .win--doc .win__close::before { content: ""; position: absolute; inset: -8px; }
+.win__close svg { position: absolute; inset: -1px; width: 12px; height: 12px; fill: none; stroke: currentColor; stroke-width: 1.2; }
+.win__close:hover { background: var(--bar-fg-front); color: var(--chrome); }
+.win__close:focus-visible { outline: 2px solid var(--select); outline-offset: 2px; }
 
 /* Full page: the window fills the screen below the menu bar */
 .win.is-full {
@@ -771,7 +790,7 @@ var TICKER = [
     w.addEventListener('pointerdown', function (e) {
       front(w);
       folder.classList.remove('is-selected');
-      if (e.target.closest('.rz, .win__mobile, .win__max, .doc__page, .win__phone') || w.classList.contains('is-full')) return;
+      if (e.target.closest('.rz, .win__mobile, .win__max, .win__close, .doc__page, .win__phone') || w.classList.contains('is-full')) return;
       var onBar = !!e.target.closest('.win__bar');
       if (!onBar && e.pointerType !== 'mouse') return;
       if (e.button !== 0) return;
@@ -813,6 +832,17 @@ var TICKER = [
 
     addHandles(w);
     w.querySelector('.win__max').addEventListener('click', function () { toggleFull(w); });
+    var close = document.createElement('button');
+    close.type = 'button';
+    close.className = 'win__close';
+    close.setAttribute('aria-label', 'Close full page');
+    close.innerHTML = '<svg viewBox="0 0 12 12" aria-hidden="true"><path d="M3.5 3.5l5 5M8.5 3.5l-5 5"/></svg>';
+    if (w === about) close.setAttribute('aria-label', 'Close About');
+    close.addEventListener('click', function () {
+      if (w.classList.contains('is-full')) toggleFull(w);
+      if (w === about) { about.hidden = true; fitDesk(); }   /* the About window can always be closed */
+    });
+    w.querySelector('.win__bar').insertBefore(close, w.querySelector('.win__max'));
     var mob = w.querySelector('.win__mobile');
     if (mob) mob.addEventListener('click', function () { toggleMobile(w); });
   });
