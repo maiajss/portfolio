@@ -158,6 +158,21 @@ img { max-width: 100%; height: auto; display: block; }
   }
   .band--notes .band__blurb { max-width: 60%; }
 }
+/* Tamacare on phones: same idea. The device sits between 38% and 63% of the
+   image, so a 120% wide image nudged 33% puts it in the right third. */
+@media (max-width: 720px) {
+  .band--tama .band__product {
+    left: auto; right: 0; top: 50%; bottom: auto;
+    width: 120%; height: auto;
+    transform: translate(33%, -50%);
+  }
+  .band--tama .band__blurb { max-width: 60%; }
+}
+/* Smallest phones: the title can't shrink further, so the device does. */
+@media (max-width: 360px) {
+  .band--tama .band__product { width: 100%; }
+  .band--tama .band__blurb { max-width: 66%; }
+}
 
 /* Moving background (a looping video instead of a GIF, far smaller).
    Same treatment as the still images; it covers the still poster. */
