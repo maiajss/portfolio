@@ -394,13 +394,30 @@ body.has-full { overflow: hidden; }
   -webkit-user-select: none;
 }
 .doc__pick {
+  font: inherit;
+  color: var(--tools-fg);
   border: 0.5px solid var(--btn-edge);
   border-radius: 4px;
   background: var(--paper);
-  padding: 1px 6px;
+  padding: 1px 4px;
+  height: 20px;
+  cursor: pointer;
 }
-.doc__pick::after { content: " \2304"; color: #888; }
-.doc__fmt { display: inline-flex; gap: 8px; font-family: Georgia, serif; font-size: 12px; }
+.doc__fmt { display: inline-flex; gap: 2px; font-family: Georgia, serif; font-size: 12px; }
+.doc__btn {
+  width: 20px; height: 20px;
+  padding: 0;
+  border: 0;
+  border-radius: 4px;
+  background: none;
+  color: var(--tools-fg);
+  font: inherit;
+  cursor: pointer;
+}
+.doc__btn:hover { background: var(--hover); }
+.doc__btn[aria-pressed="true"] { background: var(--tools-fg); color: var(--tools); }
+.doc__pick:focus-visible, .doc__btn:focus-visible { outline: 2px solid var(--select); outline-offset: 1px; }
+.doc__page.is-u p { text-decoration: underline; text-underline-offset: 2px; }
 .doc__page {
   padding: 22px 26px 26px;
   max-height: min(62vh, 560px);
@@ -586,11 +603,29 @@ body.is-resizing, body.is-resizing * { user-select: none; -webkit-user-select: n
     <article class="win win--doc" data-id="about" hidden aria-label="About Maia">
       <div class="win__bar"><button class="win__max" type="button" aria-label="Full page" aria-pressed="false"><svg viewBox="0 0 12 12" aria-hidden="true"><path d="M3.2 8.8V5.4l3.4 3.4zM8.8 3.2v3.4L5.4 3.2z"/></svg></button>
         <span class="win__name">About Maia.rtf</span></div>
-      <div class="doc__tools" aria-hidden="true">
-        <span class="doc__pick">Helvetica Neue</span>
-        <span class="doc__pick">Regular</span>
-        <span class="doc__pick">13</span>
-        <span class="doc__fmt"><b>B</b><i>I</i><u>U</u></span>
+      <div class="doc__tools" role="toolbar" aria-label="Text style">
+        <select class="doc__pick" id="docFont" aria-label="Font">
+          <option value="'Helvetica Neue', Helvetica, Arial, sans-serif">Helvetica Neue</option>
+          <option value="'DM Mono', 'Courier New', monospace">DM Mono</option>
+          <option value="Georgia, 'Times New Roman', serif">Georgia</option>
+          <option value="'Times New Roman', Times, serif">Times</option>
+          <option value="'Courier New', Courier, monospace">Courier</option>
+        </select>
+        <select class="doc__pick" id="docStyle" aria-label="Typeface style">
+          <option value="regular">Regular</option>
+          <option value="bold">Bold</option>
+          <option value="italic">Italic</option>
+          <option value="bold-italic">Bold Italic</option>
+        </select>
+        <select class="doc__pick" id="docSize" aria-label="Font size">
+          <option>10</option><option>11</option><option>12</option><option selected>13</option>
+          <option>14</option><option>16</option><option>18</option><option>24</option>
+        </select>
+        <span class="doc__fmt">
+          <button class="doc__btn" id="docB" type="button" aria-pressed="false" aria-label="Bold"><b>B</b></button>
+          <button class="doc__btn" id="docI" type="button" aria-pressed="false" aria-label="Italic"><i>I</i></button>
+          <button class="doc__btn" id="docU" type="button" aria-pressed="false" aria-label="Underline"><u>U</u></button>
+        </span>
       </div>
       <div class="doc__page">
         <img class="doc__art" src="../assets/side.png" alt="Line drawing of Maia in sunglasses" width="900" height="695" loading="lazy">
@@ -790,7 +825,7 @@ var TICKER = [
     w.addEventListener('pointerdown', function (e) {
       front(w);
       folder.classList.remove('is-selected');
-      if (e.target.closest('.rz, .win__mobile, .win__max, .win__close, .doc__page, .win__phone') || w.classList.contains('is-full')) return;
+      if (e.target.closest('.rz, .doc__pick, .doc__btn, .win__mobile, .win__max, .win__close, .doc__page, .win__phone') || w.classList.contains('is-full')) return;
       var onBar = !!e.target.closest('.win__bar');
       if (!onBar && e.pointerType !== 'mouse') return;
       if (e.button !== 0) return;
@@ -1080,6 +1115,32 @@ var TICKER = [
   ready = true;
   fitDesk();
   window.addEventListener('pagehide', save);
+  /* TextEdit toolbar: every control changes the About text */
+  var page = about.querySelector('.doc__page');
+  var fFont = document.getElementById('docFont'), fStyle = document.getElementById('docStyle'),
+      fSize = document.getElementById('docSize');
+  var bB = document.getElementById('docB'), bI = document.getElementById('docI'), bU = document.getElementById('docU');
+  function press(btn, on) { btn.setAttribute('aria-pressed', on ? 'true' : 'false'); }
+  function on(btn) { return btn.getAttribute('aria-pressed') === 'true'; }
+  function applyDoc() {
+    page.style.fontFamily = fFont.value;
+    page.style.fontSize = fSize.value + 'px';
+    page.style.fontWeight = on(bB) ? '700' : '';
+    page.style.fontStyle = on(bI) ? 'italic' : '';
+    page.classList.toggle('is-u', on(bU));
+  }
+  function syncStyle() { fStyle.value = on(bB) && on(bI) ? 'bold-italic' : on(bB) ? 'bold' : on(bI) ? 'italic' : 'regular'; }
+  fFont.addEventListener('change', applyDoc);
+  fSize.addEventListener('change', applyDoc);
+  fStyle.addEventListener('change', function () {
+    press(bB, fStyle.value.indexOf('bold') > -1);
+    press(bI, fStyle.value.indexOf('italic') > -1);
+    applyDoc();
+  });
+  bB.addEventListener('click', function () { press(bB, !on(bB)); syncStyle(); applyDoc(); });
+  bI.addEventListener('click', function () { press(bI, !on(bI)); syncStyle(); applyDoc(); });
+  bU.addEventListener('click', function () { press(bU, !on(bU)); applyDoc(); });
+
   /* The broom: put every window and the folder back where they started */
   document.getElementById('tidy').addEventListener('click', function () {
     try { localStorage.removeItem(STORE); } catch (e) {}
