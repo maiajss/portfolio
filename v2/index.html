@@ -284,8 +284,8 @@ button { font: inherit; color: inherit; }
 .win__max::before {              /* hit area for fingers */
   content: ""; position: absolute; inset: -8px;
 }
+.win__max svg { position: absolute; inset: 0; width: 100%; height: 100%; fill: #0b5c17; }
 .win__max:hover { background: #33d64a; }
-.win__max:focus-visible { outline: 2px solid var(--select); outline-offset: 2px; }
 
 /* Full page: the window fills the screen below the menu bar */
 .win.is-full {
@@ -307,6 +307,13 @@ button { font: inherit; color: inherit; }
 .win.is-full .win__body--product img { padding: 3%; }
 .win--doc.is-full .doc__page { flex: 1 1 auto; min-height: 0; max-height: none; }
 body.has-full { overflow: hidden; }
+
+/* Mobile view: the window turns phone-shaped and shows the project page at phone width */
+.win__phone { display: none; flex: 1 1 auto; min-height: 0; background: #fff; }
+.win__phone iframe { display: block; width: 100%; height: 100%; border: 0; }
+.win.is-mobile .win__body { display: none; }
+.win.is-mobile .win__phone { display: block; }
+.win.is-dragging .win__phone iframe, .win.is-resizing .win__phone iframe { pointer-events: none; }
 .win__name {
   flex: 1 1 auto;
   min-width: 0;
@@ -314,21 +321,26 @@ body.has-full { overflow: hidden; }
   overflow: hidden;
   text-overflow: ellipsis;
 }
-.win__open {
+.win__mobile {
   flex: none;
   position: relative;
-  z-index: 4;
-  font-weight: 500;
-  font-size: 10.5px;
-  color: var(--bar-fg-front);
-  text-decoration: none;
-  padding: 1px 7px;
+  z-index: 4;                    /* above the corner resize handle */
+  display: grid;
+  place-items: center;
+  width: 20px; height: 18px;
+  padding: 0;
+  border: 0;
   border-radius: 4px;
-  border: 0.5px solid var(--btn-edge);
-  background: var(--btn-bg);
+  background: none;
+  color: var(--bar-fg);
+  cursor: pointer;
 }
-.win__open:hover { background: var(--btn-bg-hover); }
-.win__open:focus-visible, .menu__item:focus-visible {
+.win__mobile::before { content: ""; position: absolute; inset: -4px; }
+.win__mobile svg { width: 9px; height: 14px; fill: none; stroke: currentColor; stroke-width: 1.4; stroke-linecap: round; }
+.win.is-front .win__mobile { color: var(--bar-fg-front); }
+.win__mobile:hover { background: var(--hover); }
+.win .win__mobile[aria-pressed="true"] { background: var(--bar-fg-front); color: var(--chrome); }
+.win__mobile:focus-visible, .win__max:focus-visible {
   outline: 2px solid var(--select);
   outline-offset: 2px;
 }
@@ -475,16 +487,16 @@ body.is-resizing, body.is-resizing * { user-select: none; -webkit-user-select: n
     </button>
 
     <article class="win" data-id="good">
-      <div class="win__bar"><button class="win__max" type="button" aria-label="Full page" aria-pressed="false"></button>
+      <div class="win__bar"><button class="win__max" type="button" aria-label="Full page" aria-pressed="false"><svg viewBox="0 0 12 12" aria-hidden="true"><path d="M3.2 8.8V5.4l3.4 3.4zM8.8 3.2v3.4L5.4 3.2z"/></svg></button>
         <span class="win__name">The Good $#!T.mov</span>
-        <a class="win__open" href="../projects/the-good-shit.html">Open</a></div>
+        <button class="win__mobile" type="button" aria-label="Mobile view" aria-pressed="false" data-src="../projects/the-good-shit.html"><svg viewBox="0 0 10 16" aria-hidden="true"><rect x="0.75" y="0.75" width="8.5" height="14.5" rx="1.8"/><path d="M3.8 2.6h2.4"/></svg></button></div>
       <a class="win__body" href="../projects/the-good-shit.html" tabindex="-1"><img src="../assets/projects/the-good-shit.jpg" alt="The Good $#!T: a history lesson, but make it Miller Time" width="1600" height="812"></a>
     </article>
 
     <article class="win" data-id="nature">
-      <div class="win__bar"><button class="win__max" type="button" aria-label="Full page" aria-pressed="false"></button>
+      <div class="win__bar"><button class="win__max" type="button" aria-label="Full page" aria-pressed="false"><svg viewBox="0 0 12 12" aria-hidden="true"><path d="M3.2 8.8V5.4l3.4 3.4zM8.8 3.2v3.4L5.4 3.2z"/></svg></button>
         <span class="win__name">Nature Is Speaking.mp4</span>
-        <a class="win__open" href="../projects/nature-is-speaking.html">Open</a></div>
+        <button class="win__mobile" type="button" aria-label="Mobile view" aria-pressed="false" data-src="../projects/nature-is-speaking.html"><svg viewBox="0 0 10 16" aria-hidden="true"><rect x="0.75" y="0.75" width="8.5" height="14.5" rx="1.8"/><path d="M3.8 2.6h2.4"/></svg></button></div>
       <a class="win__body" href="../projects/nature-is-speaking.html" tabindex="-1">
         <video autoplay muted loop playsinline preload="auto" poster="../assets/projects/nature-is-speaking.jpg" width="750" height="468" aria-label="Nature Is Speaking">
           <source src="../assets/projects/nature-is-speaking.webm" type="video/webm">
@@ -493,49 +505,49 @@ body.is-resizing, body.is-resizing * { user-select: none; -webkit-user-select: n
     </article>
 
     <article class="win" data-id="beer">
-      <div class="win__bar"><button class="win__max" type="button" aria-label="Full page" aria-pressed="false"></button>
+      <div class="win__bar"><button class="win__max" type="button" aria-label="Full page" aria-pressed="false"><svg viewBox="0 0 12 12" aria-hidden="true"><path d="M3.2 8.8V5.4l3.4 3.4zM8.8 3.2v3.4L5.4 3.2z"/></svg></button>
         <span class="win__name">#BeerYourselfie.jpg</span>
-        <a class="win__open" href="../projects/beeryourselfie.html">Open</a></div>
+        <button class="win__mobile" type="button" aria-label="Mobile view" aria-pressed="false" data-src="../projects/beeryourselfie.html"><svg viewBox="0 0 10 16" aria-hidden="true"><rect x="0.75" y="0.75" width="8.5" height="14.5" rx="1.8"/><path d="M3.8 2.6h2.4"/></svg></button></div>
       <a class="win__body" href="../projects/beeryourselfie.html" tabindex="-1"><img src="../assets/projects/beeryourselfie.jpg" alt="#BeerYourselfie: a selfie stick with a beer on it" width="1500" height="468"></a>
     </article>
 
     <article class="win" data-id="sweat">
-      <div class="win__bar"><button class="win__max" type="button" aria-label="Full page" aria-pressed="false"></button>
+      <div class="win__bar"><button class="win__max" type="button" aria-label="Full page" aria-pressed="false"><svg viewBox="0 0 12 12" aria-hidden="true"><path d="M3.2 8.8V5.4l3.4 3.4zM8.8 3.2v3.4L5.4 3.2z"/></svg></button>
         <span class="win__name">Better With Sweat.jpg</span>
-        <a class="win__open" href="../projects/better-with-sweat.html">Open</a></div>
+        <button class="win__mobile" type="button" aria-label="Mobile view" aria-pressed="false" data-src="../projects/better-with-sweat.html"><svg viewBox="0 0 10 16" aria-hidden="true"><rect x="0.75" y="0.75" width="8.5" height="14.5" rx="1.8"/><path d="M3.8 2.6h2.4"/></svg></button></div>
       <a class="win__body" href="../projects/better-with-sweat.html" tabindex="-1"><img src="../assets/projects/better-with-sweat.jpg" alt="Better With Sweat: the best reward for hard work" width="750" height="468"></a>
     </article>
 
     <article class="win" data-id="prayers">
-      <div class="win__bar"><button class="win__max" type="button" aria-label="Full page" aria-pressed="false"></button>
+      <div class="win__bar"><button class="win__max" type="button" aria-label="Full page" aria-pressed="false"><svg viewBox="0 0 12 12" aria-hidden="true"><path d="M3.2 8.8V5.4l3.4 3.4zM8.8 3.2v3.4L5.4 3.2z"/></svg></button>
         <span class="win__name">Prayers For Change.mov</span>
-        <a class="win__open" href="../projects/prayers-for-change.html">Open</a></div>
+        <button class="win__mobile" type="button" aria-label="Mobile view" aria-pressed="false" data-src="../projects/prayers-for-change.html"><svg viewBox="0 0 10 16" aria-hidden="true"><rect x="0.75" y="0.75" width="8.5" height="14.5" rx="1.8"/><path d="M3.8 2.6h2.4"/></svg></button></div>
       <a class="win__body" href="../projects/prayers-for-change.html" tabindex="-1"><img src="../assets/projects/prayers-for-change.jpg" alt="Prayers For Change: now thoughts and prayers can create real change" width="1000" height="625"></a>
     </article>
 
     <article class="win" data-id="tama">
-      <div class="win__bar"><button class="win__max" type="button" aria-label="Full page" aria-pressed="false"></button>
+      <div class="win__bar"><button class="win__max" type="button" aria-label="Full page" aria-pressed="false"><svg viewBox="0 0 12 12" aria-hidden="true"><path d="M3.2 8.8V5.4l3.4 3.4zM8.8 3.2v3.4L5.4 3.2z"/></svg></button>
         <span class="win__name">Tamacare.app</span>
-        <a class="win__open" href="../projects/tamacare.html">Open</a></div>
+        <button class="win__mobile" type="button" aria-label="Mobile view" aria-pressed="false" data-src="../projects/tamacare.html"><svg viewBox="0 0 10 16" aria-hidden="true"><rect x="0.75" y="0.75" width="8.5" height="14.5" rx="1.8"/><path d="M3.8 2.6h2.4"/></svg></button></div>
       <a class="win__body win__body--product" href="../projects/tamacare.html" tabindex="-1" style="--backdrop:#f7f7f7"><img src="../assets/projects/tamacare.png" alt="Tamacare: a digital resource for virtual parents" width="1000" height="625"></a>
     </article>
 
     <article class="win" data-id="fetch">
-      <div class="win__bar"><button class="win__max" type="button" aria-label="Full page" aria-pressed="false"></button>
+      <div class="win__bar"><button class="win__max" type="button" aria-label="Full page" aria-pressed="false"><svg viewBox="0 0 12 12" aria-hidden="true"><path d="M3.2 8.8V5.4l3.4 3.4zM8.8 3.2v3.4L5.4 3.2z"/></svg></button>
         <span class="win__name">Go Fetch Adventure.jpg</span>
-        <a class="win__open" href="../projects/go-fetch-adventure.html">Open</a></div>
+        <button class="win__mobile" type="button" aria-label="Mobile view" aria-pressed="false" data-src="../projects/go-fetch-adventure.html"><svg viewBox="0 0 10 16" aria-hidden="true"><rect x="0.75" y="0.75" width="8.5" height="14.5" rx="1.8"/><path d="M3.8 2.6h2.4"/></svg></button></div>
       <a class="win__body" href="../projects/go-fetch-adventure.html" tabindex="-1"><img src="../assets/projects/go-fetch-adventure.jpg" alt="Go Fetch Adventure: this isn't a pound, it's a vacation destination" width="750" height="468"></a>
     </article>
 
     <article class="win" data-id="notes">
-      <div class="win__bar"><button class="win__max" type="button" aria-label="Full page" aria-pressed="false"></button>
+      <div class="win__bar"><button class="win__max" type="button" aria-label="Full page" aria-pressed="false"><svg viewBox="0 0 12 12" aria-hidden="true"><path d="M3.2 8.8V5.4l3.4 3.4zM8.8 3.2v3.4L5.4 3.2z"/></svg></button>
         <span class="win__name">Notes.txt</span>
-        <a class="win__open" href="../projects/notes.html">Open</a></div>
+        <button class="win__mobile" type="button" aria-label="Mobile view" aria-pressed="false" data-src="../projects/notes.html"><svg viewBox="0 0 10 16" aria-hidden="true"><rect x="0.75" y="0.75" width="8.5" height="14.5" rx="1.8"/><path d="M3.8 2.6h2.4"/></svg></button></div>
       <a class="win__body win__body--product" href="../projects/notes.html" tabindex="-1" style="--backdrop:#f5f1eb"><img src="../assets/projects/notes.png" alt="Notes: daily reminders turned full-on philosophy" width="1148" height="717"></a>
     </article>
 
     <article class="win win--doc" data-id="about" hidden aria-label="About Maia">
-      <div class="win__bar"><button class="win__max" type="button" aria-label="Full page" aria-pressed="false"></button>
+      <div class="win__bar"><button class="win__max" type="button" aria-label="Full page" aria-pressed="false"><svg viewBox="0 0 12 12" aria-hidden="true"><path d="M3.2 8.8V5.4l3.4 3.4zM8.8 3.2v3.4L5.4 3.2z"/></svg></button>
         <span class="win__name">About Maia.rtf</span></div>
       <div class="doc__tools" aria-hidden="true">
         <span class="doc__pick">Helvetica Neue</span>
@@ -641,6 +653,7 @@ var TICKER = [
     ORDER.forEach(function (id, i) {
       var w = desk.querySelector('[data-id="' + id + '"]');
       var p = L[id];
+      toggleMobile(w, true);
       w.style.width = (p[2] * W / 100) + 'px';
       setPos(w, p[0] * W / 100, p[1] * W / 100 + offset);
       w.style.zIndex = 10 + i;
@@ -668,6 +681,55 @@ var TICKER = [
     });
     bottom = Math.max(bottom, folder._y + folder.offsetHeight);
     desk.style.height = (bottom + 80) + 'px';
+    saveSoon();
+  }
+
+  /* Remember each visitor's arrangement (positions, sizes, stacking, phone view,
+     folder, About window) in their own browser, so it is still there when they
+     come back from a project page or return to the site another day. */
+  var STORE = 'maia-desk-v1', ready = false, st;
+  function saveSoon() { if (!ready) return; clearTimeout(st); st = setTimeout(save, 250); }
+  function save() {
+    if (!ready) return;
+    var W = desk.clientWidth;
+    var data = { mode: mode, W: W, z: z, wins: {}, folder: { x: folder._x / W, y: folder._y / W, z: +folder.style.zIndex || 5 } };
+    wins.forEach(function (w) {
+      data.wins[w.getAttribute('data-id')] = {
+        x: w._x / W, y: w._y / W, w: w.offsetWidth / W,
+        h: w.style.height ? parseFloat(w.style.height) / W : 0,
+        z: +w.style.zIndex || 10,
+        mobile: w.classList.contains('is-mobile'),
+        before: w._beforeMobile ? { w: w._beforeMobile.w / W, x: w._beforeMobile.x / W } : null,
+        hidden: w.hidden, sized: w.classList.contains('is-sized')
+      };
+    });
+    try { localStorage.setItem(STORE, JSON.stringify(data)); } catch (e) {}
+  }
+  function restore() {
+    var data;
+    try { data = JSON.parse(localStorage.getItem(STORE) || 'null'); } catch (e) { data = null; }
+    if (!data || data.mode !== mode || !data.wins) return;
+    var W = desk.clientWidth;
+    wins.forEach(function (w) {
+      var d = data.wins[w.getAttribute('data-id')];
+      if (!d) return;
+      if (d.mobile && w.querySelector('.win__mobile')) {
+        toggleMobile(w);
+        if (d.before) w._beforeMobile = { w: d.before.w * W, x: d.before.x * W };
+      }
+      w.hidden = !!d.hidden;
+      w.style.width = (d.w * W) + 'px';
+      w.style.height = d.h ? (d.h * W) + 'px' : '';
+      w.classList.toggle('is-sized', !!d.sized);
+      setPos(w, d.x * W, d.y * W);
+      w.style.zIndex = d.z;
+    });
+    if (data.folder) { setPos(folder, data.folder.x * W, data.folder.y * W); folder.style.zIndex = data.folder.z; }
+    z = Math.max(z, data.z || 0);
+    wins.forEach(function (o) { o.classList.remove('is-front'); });
+    var top = wins.filter(function (w) { return !w.hidden; })
+      .sort(function (a, b) { return (+b.style.zIndex) - (+a.style.zIndex); })[0];
+    if (top) top.classList.add('is-front');
   }
 
   function front(w) {
@@ -684,7 +746,7 @@ var TICKER = [
     w.addEventListener('pointerdown', function (e) {
       front(w);
       folder.classList.remove('is-selected');
-      if (e.target.closest('.rz, .win__open, .win__max, .doc__page') || w.classList.contains('is-full')) return;
+      if (e.target.closest('.rz, .win__mobile, .win__max, .doc__page, .win__phone') || w.classList.contains('is-full')) return;
       var onBar = !!e.target.closest('.win__bar');
       if (!onBar && e.pointerType !== 'mouse') return;
       if (e.button !== 0) return;
@@ -711,6 +773,7 @@ var TICKER = [
       /* A click on the picture without dragging opens the project. */
       if (!d.moved && e.type === 'pointerup' && !e.target.closest('.win__bar')) {
         var link = w.querySelector('.win__body[href]');
+        save();
         if (link) window.location.href = link.getAttribute('href');
       }
     }
@@ -725,7 +788,49 @@ var TICKER = [
 
     addHandles(w);
     w.querySelector('.win__max').addEventListener('click', function () { toggleFull(w); });
+    var mob = w.querySelector('.win__mobile');
+    if (mob) mob.addEventListener('click', function () { toggleMobile(w); });
   });
+
+  /* The phone icon: show the project page itself at phone size inside the window. */
+  var PHONE_W = 360, PHONE_RATIO = 9 / 18.5;
+  function toggleMobile(w, forceOff) {
+    var btn = w.querySelector('.win__mobile');
+    var on = forceOff ? false : !w.classList.contains('is-mobile');
+    if (on === w.classList.contains('is-mobile')) return;
+    if (on) {
+      w._beforeMobile = { w: w.offsetWidth, x: w._x };
+      var width = Math.min(PHONE_W, desk.clientWidth);
+      var phone = w.querySelector('.win__phone');
+      if (!phone) {
+        phone = document.createElement('div');
+        phone.className = 'win__phone';
+        var f = document.createElement('iframe');
+        f.title = w.querySelector('.win__name').textContent + ' in mobile view';
+        f.src = btn.getAttribute('data-src');
+        f.addEventListener('load', function () {
+          /* links inside the phone open in the whole tab, not inside the window */
+          try { f.contentDocument.querySelectorAll('a[href]').forEach(function (a) { if (!a.target) a.target = '_top'; }); } catch (e) {}
+        });
+        phone.appendChild(f);
+        w.insertBefore(phone, w.querySelector('.rz'));
+      }
+      w.classList.add('is-mobile');
+      w.style.width = width + 'px';
+      w.style.height = Math.round(width / PHONE_RATIO) + 'px';
+      /* keep it on the desk, centred where the window was */
+      var x = w._beforeMobile.x + (w._beforeMobile.w - width) / 2;
+      setPos(w, Math.min(Math.max(0, x), desk.clientWidth - width), w._y);
+      front(w);
+    } else {
+      w.classList.remove('is-mobile');
+      w.style.height = '';
+      if (w._beforeMobile) { w.style.width = w._beforeMobile.w + 'px'; setPos(w, w._beforeMobile.x, w._y); }
+    }
+    btn.setAttribute('aria-pressed', on ? 'true' : 'false');
+    btn.setAttribute('aria-label', on ? 'Back to picture' : 'Mobile view');
+    fitDesk();
+  }
 
   /* The green dot: fill the screen, tap again (or press Esc) to go back. */
   function toggleFull(w) {
@@ -805,6 +910,7 @@ var TICKER = [
     }
     rs.w.style.width = nw + 'px';
     if (rs.free) { rs.w.style.height = nh + 'px'; rs.w.classList.add('is-sized'); }
+    else if (rs.w.classList.contains('is-mobile')) rs.w.style.height = nh + 'px';
     setPos(rs.w, x, y);
     fitDesk();
   }
@@ -915,6 +1021,11 @@ var TICKER = [
   window.addEventListener('resize', function () { clearTimeout(t); t = setTimeout(function () { place(false); }, 120); });
   window.addEventListener('load', fitDesk);
   place(true);
+  restore();
+  ready = true;
+  fitDesk();
+  window.addEventListener('pagehide', save);
+  document.addEventListener('visibilitychange', function () { if (document.visibilityState === 'hidden') save(); });
 })();
 </script>
 </body>
