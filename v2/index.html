@@ -42,11 +42,11 @@
   --art-filter: none;
   --art-blend: multiply;
   --select: #2f6fe4;
-  --folder-back: #e6e6e6;
-  --folder-front: #ffffff;
-  --folder-front-2: #f1f1f1;
-  --folder-line: rgba(0,0,0,.08);
-  --folder-mark: #000000;
+  --folder-back: #5aa8e8;
+  --folder-front: #84c3f4;
+  --folder-front-2: #6eb5f0;
+  --folder-line: rgba(255,255,255,.55);
+  --folder-mark: #ffffff;
   --label-fg: #ffffff;
   --tab-bg: #000000;
   --tab-fg: #ffffff;
@@ -83,11 +83,6 @@
   --tools-fg: #d0d0d0;
   --art-filter: invert(1);
   --art-blend: screen;
-  --folder-back: #1c1c1c;
-  --folder-front: #000000;
-  --folder-front-2: #0b0b0b;
-  --folder-line: rgba(255,255,255,.14);
-  --folder-mark: #ffffff;
   --label-fg: #000000;
   --tab-bg: #ffffff;
   --tab-fg: #000000;
@@ -189,7 +184,6 @@ button { font: inherit; color: inherit; }
 }
 .icon__folder { position: relative; width: 78px; height: 64px; }
 .icon__folder svg { width: 100%; height: 100%; display: block; filter: drop-shadow(0 2px 3px rgba(0,0,0,.25)); }
-:root[data-mode="lcd"] .icon__folder svg { filter: drop-shadow(0 2px 3px rgba(0,0,0,.18)); }
 .icon__mark {
   position: absolute;
   left: 50%; top: 58%;
@@ -441,7 +435,7 @@ body.is-resizing, body.is-resizing * { user-select: none; -webkit-user-select: n
   </nav>
 
   <main class="desk" id="desk" aria-label="Projects">
-    <button class="icon" id="folder" type="button" aria-label="Open About Maia">
+    <button class="icon" id="folder" type="button" aria-label="Open About">
       <span class="icon__folder" aria-hidden="true">
         <svg viewBox="0 0 78 64">
           <path d="M4 10a5 5 0 0 1 5-5h18c2 0 3 .6 4.2 1.8L35 11h34a5 5 0 0 1 5 5v39a5 5 0 0 1-5 5H9a5 5 0 0 1-5-5z" fill="var(--folder-back)"/>
@@ -451,7 +445,7 @@ body.is-resizing, body.is-resizing * { user-select: none; -webkit-user-select: n
         </svg>
         <span class="icon__mark"></span>
       </span>
-      <span class="icon__label">About Maia</span>
+      <span class="icon__label">About</span>
     </button>
 
     <article class="win" data-id="good">
