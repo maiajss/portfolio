@@ -57,6 +57,7 @@
   --font-doc: "Helvetica Neue", Helvetica, Arial, sans-serif;
   --font-type: "DM Mono", "Courier New", monospace;
   --menu-h: 28px;
+  --ticker-h: 24px;
   color-scheme: light;
 }
 /* liquid crystal mode: everything inverted */
@@ -115,16 +116,42 @@ button { font: inherit; color: inherit; }
 }
 .wall img.is-on { opacity: 1; }
 
-/* ---------- Menu bar ---------- */
-.menu {
+/* ---------- Top: running text + menu bar ---------- */
+.top {
   position: sticky;
   top: 0;
   z-index: 100000;
+}
+.ticker {
+  height: calc(var(--ticker-h) + env(safe-area-inset-top, 0px));
+  padding-top: env(safe-area-inset-top, 0px);
+  overflow: hidden;
+  background: var(--tab-bg);
+  color: var(--tab-fg);
+  border-bottom: 0.5px solid var(--tab-edge);
+  font-family: var(--font-type);
+  font-size: 12.5px;
+  letter-spacing: .09em;
+  white-space: nowrap;
+  transition: background-color .3s ease;
+}
+.ticker__track {
+  display: inline-flex;
+  height: var(--ticker-h);
+  align-items: center;
+  will-change: transform;
+  animation: ticker var(--ticker-dur, 30s) linear infinite;
+}
+.ticker__item { padding-right: 6em; }
+@keyframes ticker { from { transform: translateX(0); } to { transform: translateX(-50%); } }
+@media (prefers-reduced-motion: reduce) {
+  .ticker__track { animation: none; padding-left: max(16px, env(safe-area-inset-left, 0px)); }
+}
+.menu {
   display: flex;
   align-items: center;
   gap: 18px;
-  height: calc(var(--menu-h) + env(safe-area-inset-top, 0px));
-  padding-top: env(safe-area-inset-top, 0px);
+  height: var(--menu-h);
   padding-left: max(16px, env(safe-area-inset-left, 0px));
   padding-right: max(16px, env(safe-area-inset-right, 0px));
   background: var(--glass);
@@ -263,7 +290,7 @@ button { font: inherit; color: inherit; }
 /* Full page: the window fills the screen below the menu bar */
 .win.is-full {
   position: fixed;
-  top: calc(var(--menu-h) + env(safe-area-inset-top, 0px));
+  top: calc(var(--ticker-h) + var(--menu-h) + env(safe-area-inset-top, 0px));
   left: 0; right: 0;
   bottom: calc(38px + env(safe-area-inset-bottom, 0px));   /* stops above the mode tab */
   width: auto !important;
@@ -426,6 +453,10 @@ body.is-resizing, body.is-resizing * { user-select: none; -webkit-user-select: n
     -->
   </div>
 
+  <header class="top">
+  <div class="ticker" role="marquee" aria-label="Hi! I&rsquo;m Maia &amp; I&rsquo;m an art director.">
+    <div class="ticker__track" id="tickerTrack" aria-hidden="true"></div>
+  </div>
   <nav class="menu" aria-label="Menu bar">
     <span class="menu__logo" role="img" aria-label="MAIA!"></span>
     <span class="menu__name">Maia Swift</span>
@@ -436,6 +467,7 @@ body.is-resizing, body.is-resizing * { user-select: none; -webkit-user-select: n
     <span class="menu__hint">Drag a title bar to move a window, or an edge to resize it</span>
     <span class="menu__clock" id="clock"></span>
   </nav>
+  </header>
 
   <main class="desk" id="desk" aria-label="Projects">
     <button class="icon" id="folder" type="button" aria-label="Open About">
@@ -537,6 +569,35 @@ body.is-resizing, body.is-resizing * { user-select: none; -webkit-user-select: n
   </footer>
 
 <script>
+/* Running text across the top. Add more lines to this list and they run in turn. */
+var TICKER = [
+  'Hi! I\u2019m Maia & I\u2019m an art director.'
+];
+(function () {
+  var track = document.getElementById('tickerTrack');
+  function build() {
+    track.textContent = '';
+    var half = document.createElement('span');
+    half.style.display = 'inline-flex';
+    track.appendChild(half);
+    /* fill at least one screen width, then duplicate so the loop is seamless */
+    var guard = 0;
+    do {
+      TICKER.forEach(function (t) {
+        var i = document.createElement('span');
+        i.className = 'ticker__item';
+        i.textContent = t;
+        half.appendChild(i);
+      });
+    } while (half.offsetWidth < window.innerWidth && ++guard < 50);
+    track.appendChild(half.cloneNode(true));
+    track.style.setProperty('--ticker-dur', (half.offsetWidth / 70) + 's');   /* 70px per second */
+  }
+  build();
+  var rt;
+  window.addEventListener('resize', function () { clearTimeout(rt); rt = setTimeout(build, 200); });
+  if (document.fonts && document.fonts.ready) document.fonts.ready.then(build);
+})();
 (function () {
   var desk = document.getElementById('desk');
   var folder = document.getElementById('folder');
