@@ -270,22 +270,23 @@ button { font: inherit; color: inherit; }
   touch-action: none;
 }
 .win.is-front .win__bar { background: linear-gradient(var(--chrome-top), var(--chrome)); color: var(--bar-fg-front); }
-.win__max {
+.win__max {                     /* vintage zoom box: black on grey, square */
   flex: none;
   position: relative;
   z-index: 4;                    /* above the corner resize handle */
   width: 12px; height: 12px;
   padding: 0;
-  border: 0.5px solid #1f9a33;
-  border-radius: 50%;
-  background: #2ac840;
+  border: 1px solid var(--bar-fg-front);
+  border-radius: 0;
+  background: transparent;
+  color: var(--bar-fg-front);
   cursor: pointer;
 }
 .win__max::before {              /* hit area for fingers */
   content: ""; position: absolute; inset: -8px;
 }
-.win__max svg { position: absolute; inset: 0; width: 100%; height: 100%; fill: #0b5c17; }
-.win__max:hover { background: #33d64a; }
+.win__max svg { position: absolute; inset: -1px; width: 12px; height: 12px; fill: currentColor; }
+.win__max:hover, .win__max[aria-pressed="true"] { background: var(--bar-fg-front); color: var(--chrome); }
 
 /* Full page: the window fills the screen below the menu bar */
 .win.is-full {
