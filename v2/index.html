@@ -13,22 +13,44 @@
 <link rel="icon" href="../favicon.ico" sizes="any">
 <link rel="icon" href="../assets/icons/favicon.svg" type="image/svg+xml">
 <style>
-/* Layout: the site is a computer desktop. A rotating wallpaper sits fixed behind
-   everything; each project is a window you can drag, raise, enlarge or close;
-   a MAIA! folder opens a TextEdit window with the About text.
-   One deliberate light, Mac-like look in every theme. */
+/* Layout: the site is a computer desktop. Each project is a window you can drag,
+   resize or open full page; a MAIA! folder opens a TextEdit window with the About
+   text. Two modes the visitor picks from the tab at the bottom, independent of the
+   system theme: cathode ray (black desk, the default) and liquid crystal (inverted). */
 :root {
+  /* cathode ray mode */
+  --desk: #000000;
   --ink: #1d1d1f;
   --muted: #6e6e73;
+  --menu-fg: #1d1d1f;
+  --glass: rgba(240,240,240,.94);
+  --hover: rgba(0,0,0,.08);
   --chrome: #e4e4e4;
+  --chrome-top: #ececec;
   --chrome-dim: #d6d6d6;
   --chrome-edge: #bdbdbd;
-  --glass: rgba(240,240,240,.94);
+  --bar-fg: #4a4a4a;
+  --bar-fg-front: #1d1d1f;
+  --btn-bg: #f4f4f4;
+  --btn-bg-hover: #ffffff;
+  --btn-edge: #a9a9a9;
+  --paper: #ffffff;
+  --paper-fg: #111111;
+  --tools: #f3f3f3;
+  --tools-edge: #d0d0d0;
+  --tools-fg: #3a3a3a;
+  --art-filter: none;
+  --art-blend: multiply;
   --select: #2f6fe4;
-  --folder-back: #5aa8e8;
-  --folder-front: #84c3f4;
-  --folder-front-2: #6eb5f0;
-  --folder-mark: #3d8bd0;
+  --folder-back: #e6e6e6;
+  --folder-front: #ffffff;
+  --folder-front-2: #f1f1f1;
+  --folder-line: rgba(0,0,0,.08);
+  --folder-mark: #000000;
+  --label-fg: #ffffff;
+  --tab-bg: #000000;
+  --tab-fg: #ffffff;
+  --tab-edge: rgba(255,255,255,.22);
   --shadow: 0 18px 44px rgba(0,0,0,.30), 0 2px 6px rgba(0,0,0,.16);
   --shadow-lift: 0 30px 70px rgba(0,0,0,.38), 0 4px 12px rgba(0,0,0,.18);
   --font-ui: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Helvetica Neue", Helvetica, Arial, sans-serif;
@@ -37,22 +59,57 @@
   --menu-h: 28px;
   color-scheme: light;
 }
+/* liquid crystal mode: everything inverted */
+:root[data-mode="lcd"] {
+  --desk: #ffffff;
+  --ink: #f2f2f2;
+  --muted: #a1a1a6;
+  --menu-fg: #f2f2f2;
+  --glass: rgba(22,22,24,.94);
+  --hover: rgba(255,255,255,.12);
+  --chrome: #2f2f31;
+  --chrome-top: #3a3a3c;
+  --chrome-dim: #262628;
+  --chrome-edge: #111113;
+  --bar-fg: #9a9a9e;
+  --bar-fg-front: #f2f2f2;
+  --btn-bg: #3a3a3c;
+  --btn-bg-hover: #48484a;
+  --btn-edge: #5a5a5e;
+  --paper: #121212;
+  --paper-fg: #ededed;
+  --tools: #1e1e20;
+  --tools-edge: #000000;
+  --tools-fg: #d0d0d0;
+  --art-filter: invert(1);
+  --art-blend: screen;
+  --folder-back: #1c1c1c;
+  --folder-front: #000000;
+  --folder-front-2: #0b0b0b;
+  --folder-line: rgba(255,255,255,.14);
+  --folder-mark: #ffffff;
+  --label-fg: #000000;
+  --tab-bg: #ffffff;
+  --tab-fg: #000000;
+  --tab-edge: rgba(0,0,0,.18);
+}
 *, *::before, *::after { box-sizing: border-box; }
 html { -webkit-text-size-adjust: 100%; overflow-x: clip; }
 [hidden] { display: none !important; }
 body {
   margin: 0;
   min-height: 100vh;
-  background: #000;
+  background: var(--desk);
   color: var(--ink);
   font-family: var(--font-ui);
+  transition: background-color .3s ease;
   overflow-x: hidden;
 }
 img, video { display: block; max-width: 100%; }
 button { font: inherit; color: inherit; }
 
 /* ---------- Wallpaper ---------- */
-.wall { position: fixed; inset: 0; z-index: 0; overflow: hidden; background: #000; }
+.wall { position: fixed; inset: 0; z-index: 0; overflow: hidden; background: var(--desk); transition: background-color .3s ease; }
 .wall img {
   position: absolute; inset: 0;
   width: 100%; height: 100%;
@@ -80,10 +137,11 @@ button { font: inherit; color: inherit; }
   -webkit-backdrop-filter: blur(20px) saturate(1.4);
   font-size: 13px;
   white-space: nowrap;
+  color: var(--menu-fg);
 }
 .menu__logo {
   width: 44px; height: 24px; flex: none;
-  background: var(--ink);
+  background: var(--menu-fg);
   -webkit-mask: url("../assets/maia.png") center / contain no-repeat;
   mask: url("../assets/maia.png") center / contain no-repeat;
 }
@@ -92,7 +150,7 @@ button { font: inherit; color: inherit; }
   background: none; border: 0; padding: 2px 8px; margin: 0 -8px;
   border-radius: 4px; cursor: pointer;
 }
-.menu__item:hover { background: rgba(0,0,0,.08); }
+.menu__item:hover { background: var(--hover); }
 .menu__spacer { flex: 1 1 auto; }
 .menu__hint { color: var(--muted); }
 .menu__clock { font-variant-numeric: tabular-nums; }
@@ -131,28 +189,27 @@ button { font: inherit; color: inherit; }
 }
 .icon__folder { position: relative; width: 78px; height: 64px; }
 .icon__folder svg { width: 100%; height: 100%; display: block; filter: drop-shadow(0 2px 3px rgba(0,0,0,.25)); }
+:root[data-mode="lcd"] .icon__folder svg { filter: drop-shadow(0 2px 3px rgba(0,0,0,.18)); }
 .icon__mark {
   position: absolute;
   left: 50%; top: 58%;
   width: 46px; height: 25px;
   transform: translate(-50%, -50%);
   background: var(--folder-mark);
-  opacity: .9;
   -webkit-mask: url("../assets/maia.png") center / contain no-repeat;
   mask: url("../assets/maia.png") center / contain no-repeat;
 }
 .icon__label {
   font-size: 12px;
   font-weight: 600;
-  color: #fff;
-  text-shadow: 0 1px 2px rgba(0,0,0,.7), 0 0 6px rgba(0,0,0,.35);
+  color: var(--label-fg);
   padding: 1px 6px;
   border-radius: 4px;
   line-height: 1.3;
 }
-.icon.is-selected .icon__folder { background: rgba(0,0,0,.18); border-radius: 6px; }
-.icon.is-selected .icon__label { background: var(--select); text-shadow: none; }
-.icon:focus-visible { outline: 2px solid #fff; outline-offset: 2px; }
+.icon.is-selected .icon__folder { background: var(--hover); outline: 1px solid var(--tab-edge); border-radius: 6px; }
+.icon.is-selected .icon__label { background: var(--select); color: #fff; }
+.icon:focus-visible { outline: 2px solid var(--select); outline-offset: 2px; }
 
 /* ---------- Windows ---------- */
 .win {
@@ -182,13 +239,13 @@ button { font: inherit; color: inherit; }
   border-bottom: 0.5px solid var(--chrome-edge);
   font-size: 11px;
   font-weight: 600;
-  color: #4a4a4a;
+  color: var(--bar-fg);
   cursor: grab;
   user-select: none;
   -webkit-user-select: none;
   touch-action: none;
 }
-.win.is-front .win__bar { background: linear-gradient(#ececec, var(--chrome)); color: #1d1d1f; }
+.win.is-front .win__bar { background: linear-gradient(var(--chrome-top), var(--chrome)); color: var(--bar-fg-front); }
 .win__max {
   flex: none;
   position: relative;
@@ -210,7 +267,8 @@ button { font: inherit; color: inherit; }
 .win.is-full {
   position: fixed;
   top: calc(var(--menu-h) + env(safe-area-inset-top, 0px));
-  left: 0; right: 0; bottom: 0;
+  left: 0; right: 0;
+  bottom: calc(38px + env(safe-area-inset-bottom, 0px));   /* stops above the mode tab */
   width: auto !important;
   height: auto !important;
   transform: none !important;
@@ -238,14 +296,14 @@ body.has-full { overflow: hidden; }
   z-index: 4;
   font-weight: 500;
   font-size: 10.5px;
-  color: #1d1d1f;
+  color: var(--bar-fg-front);
   text-decoration: none;
   padding: 1px 7px;
   border-radius: 4px;
-  border: 0.5px solid #a9a9a9;
-  background: #f4f4f4;
+  border: 0.5px solid var(--btn-edge);
+  background: var(--btn-bg);
 }
-.win__open:hover { background: #fff; }
+.win__open:hover { background: var(--btn-bg-hover); }
 .win__open:focus-visible, .menu__item:focus-visible {
   outline: 2px solid var(--select);
   outline-offset: 2px;
@@ -262,7 +320,7 @@ body.has-full { overflow: hidden; }
 .win__body--product img { padding: 4% 6%; }
 
 /* ---------- TextEdit window ---------- */
-.win--doc { background: #fff; }
+.win--doc { background: var(--paper); }
 .doc__tools {
   flex: none;
   display: flex;
@@ -270,19 +328,19 @@ body.has-full { overflow: hidden; }
   gap: 10px;
   height: 30px;
   padding: 0 10px;
-  background: #f3f3f3;
-  border-bottom: 0.5px solid #d0d0d0;
+  background: var(--tools);
+  border-bottom: 0.5px solid var(--tools-edge);
   font-size: 11px;
-  color: #3a3a3a;
+  color: var(--tools-fg);
   overflow: hidden;
   white-space: nowrap;
   user-select: none;
   -webkit-user-select: none;
 }
 .doc__pick {
-  border: 0.5px solid #c2c2c2;
+  border: 0.5px solid var(--btn-edge);
   border-radius: 4px;
-  background: #fff;
+  background: var(--paper);
   padding: 1px 6px;
 }
 .doc__pick::after { content: " \2304"; color: #888; }
@@ -294,14 +352,15 @@ body.has-full { overflow: hidden; }
   font-family: var(--font-doc);
   font-size: 13px;
   line-height: 1.55;
-  color: #111;
+  color: var(--paper-fg);
+  background: var(--paper);
   user-select: text;
 }
 .doc__page p { margin: 0 0 1em; max-width: 62ch; }
 .doc__page p:last-child { margin-bottom: 0; }
 .doc__page a { color: inherit; }
 .doc__head { font-weight: 700; }
-.doc__art { width: min(220px, 55%); height: auto; mix-blend-mode: multiply; margin: 0 0 14px; }
+.doc__art { width: min(220px, 55%); height: auto; mix-blend-mode: var(--art-blend); filter: var(--art-filter); margin: 0 0 14px; }
 
 /* ---------- Resize handles on every edge and corner ---------- */
 .rz { position: absolute; z-index: 3; touch-action: none; }
@@ -325,6 +384,35 @@ body.has-full { overflow: hidden; }
 body.is-resizing, body.is-resizing * { user-select: none; -webkit-user-select: none; }
 /* The About window can be resized freely; its page fills whatever height it has */
 .win--doc.is-sized .doc__page { flex: 1 1 auto; min-height: 0; max-height: none; }
+
+/* ---------- Mode tab at the bottom ---------- */
+.mode {
+  position: fixed;
+  left: 0; right: 0; bottom: 0;
+  z-index: 100000;
+  display: flex;
+  padding-top: 8px;
+  padding-bottom: calc(10px + env(safe-area-inset-bottom, 0px));
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+  background: var(--tab-bg);
+  border-top: 0.5px solid var(--tab-edge);
+  border-radius: 0 0 18px 18px;
+  transition: background-color .3s ease;
+}
+.mode__btn {
+  background: none;
+  border: 0;
+  padding: 2px 0;
+  font-family: var(--font-type);
+  font-size: 13px;
+  letter-spacing: .09em;
+  color: var(--tab-fg);
+  cursor: pointer;
+  text-underline-offset: 4px;
+}
+.mode__btn:hover { text-decoration: underline; }
+.mode__btn:focus-visible { outline: 2px solid var(--select); outline-offset: 3px; }
 
 @media (prefers-reduced-motion: reduce) {
   .win, .wall img { transition: none; }
@@ -359,7 +447,7 @@ body.is-resizing, body.is-resizing * { user-select: none; -webkit-user-select: n
           <path d="M4 10a5 5 0 0 1 5-5h18c2 0 3 .6 4.2 1.8L35 11h34a5 5 0 0 1 5 5v39a5 5 0 0 1-5 5H9a5 5 0 0 1-5-5z" fill="var(--folder-back)"/>
           <defs><linearGradient id="ff" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="var(--folder-front)"/><stop offset="1" stop-color="var(--folder-front-2)"/></linearGradient></defs>
           <path d="M4 22a5 5 0 0 1 5-5h60a5 5 0 0 1 5 5v33a5 5 0 0 1-5 5H9a5 5 0 0 1-5-5z" fill="url(#ff)"/>
-          <path d="M9 17.5h60" stroke="rgba(255,255,255,.55)" stroke-width="1"/>
+          <path d="M9 17.5h60" stroke="var(--folder-line)" stroke-width="1"/>
         </svg>
         <span class="icon__mark"></span>
       </span>
@@ -446,6 +534,10 @@ body.is-resizing, body.is-resizing * { user-select: none; -webkit-user-select: n
     </article>
   </main>
 
+
+<footer class="mode">
+    <button class="mode__btn" id="modeBtn" type="button">switch to liquid crystal mode</button>
+  </footer>
 
 <script>
 (function () {
@@ -721,6 +813,21 @@ body.is-resizing, body.is-resizing * { user-select: none; -webkit-user-select: n
       d.toLocaleTimeString(undefined, { hour: 'numeric', minute: '2-digit' });
   }
   tick(); setInterval(tick, 15000);
+
+  /* Cathode ray (black) / liquid crystal (inverted) mode, remembered per visitor */
+  var root = document.documentElement;
+  var modeBtn = document.getElementById('modeBtn');
+  function setMode(m) {
+    if (m === 'lcd') root.setAttribute('data-mode', 'lcd'); else root.removeAttribute('data-mode');
+    modeBtn.textContent = m === 'lcd' ? 'switch to cathode ray mode' : 'switch to liquid crystal mode';
+    try { localStorage.setItem('maia-mode', m); } catch (e) {}
+  }
+  var saved = 'crt';
+  try { saved = localStorage.getItem('maia-mode') || 'crt'; } catch (e) {}
+  setMode(saved);
+  modeBtn.addEventListener('click', function () {
+    setMode(root.getAttribute('data-mode') === 'lcd' ? 'crt' : 'lcd');
+  });
 
   document.getElementById('cleanUp').addEventListener('click', function () { place(true); });
   var t;
