@@ -188,6 +188,9 @@ img { max-width: 100%; height: auto; display: block; }
   pointer-events: none;
 }
 .band--img:has(.band__media)::before { display: none; filter: grayscale(1) contrast(1.35); }
+/* Show a band's footage exactly as shot: no grey-out, no extra contrast */
+.band--true-color::before,
+.band--true-color .band__media { filter: none; }
 @media (prefers-reduced-motion: reduce) {
   .band__media { display: none; }
   .band--img:has(.band__media)::before { display: block; }
