@@ -167,9 +167,10 @@ button { font: inherit; color: inherit; }
 /* ---------- Desktop icon: the MAIA! folder ---------- */
 .icon {
   position: absolute;
-  top: 0; right: 0;
+  top: 0; left: 0;
   z-index: 5;
   width: 104px;
+  touch-action: none;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -178,7 +179,7 @@ button { font: inherit; color: inherit; }
   background: none;
   border: 0;
   border-radius: 8px;
-  cursor: default;
+  cursor: pointer;
   user-select: none;
   -webkit-user-select: none;
 }
@@ -203,6 +204,8 @@ button { font: inherit; color: inherit; }
 }
 .icon.is-selected .icon__folder { background: var(--hover); outline: 1px solid var(--tab-edge); border-radius: 6px; }
 .icon.is-selected .icon__label { background: var(--select); color: #fff; }
+.icon.is-dragging { cursor: grabbing; }
+.icon.is-dragging .icon__folder { opacity: .85; }
 .icon:focus-visible { outline: 2px solid var(--select); outline-offset: 2px; }
 
 /* ---------- Windows ---------- */
@@ -577,8 +580,8 @@ body.is-resizing, body.is-resizing * { user-select: none; -webkit-user-select: n
     mode = newMode;
     var L = narrow ? NARROW : WIDE;
     var offset = narrow ? 112 : 0;
-    folder.style.right = narrow ? 'auto' : '0';
-    folder.style.left = narrow ? '-4px' : 'auto';
+    setPos(folder, narrow ? -4 : W - 104, 0);
+    folder.style.zIndex = 5;
     ORDER.forEach(function (id, i) {
       var w = desk.querySelector('[data-id="' + id + '"]');
       var p = L[id];
@@ -607,6 +610,7 @@ body.is-resizing, body.is-resizing * { user-select: none; -webkit-user-select: n
       if (w.hidden) return;
       bottom = Math.max(bottom, w._y + w.offsetHeight);
     });
+    bottom = Math.max(bottom, folder._y + folder.offsetHeight);
     desk.style.height = (bottom + 80) + 'px';
   }
 
@@ -758,27 +762,67 @@ body.is-resizing, body.is-resizing * { user-select: none; -webkit-user-select: n
     rs = null;
   }
 
-  /* The folder: click selects, double-click opens (one tap on touch, Enter on keyboard). */
+  /* The folder: drag it anywhere on the desk; a click or tap without dragging
+     (or Enter on the keyboard) opens the About window next to it. */
   function openAbout() {
     folder.classList.remove('is-selected');
-    if (!about.hidden) { front(about); return; }
     var W = desk.clientWidth;
     var width = Math.min(W, 560);
-    about.style.width = width + 'px';
+    if (about.hidden) {
+      about.style.width = width + 'px';
+      about.style.height = '';
+      about.classList.remove('is-sized');
+    } else {
+      width = about.offsetWidth;
+    }
     about.hidden = false;
-    var x = isNarrow() ? (W - width) / 2 : W - width - 120;
-    var y = Math.max(0, window.scrollY - desk.offsetTop + 30);
+    var x, y;
+    if (isNarrow()) {
+      x = (W - width) / 2;
+      y = folder._y + folder.offsetHeight + 8;
+    } else {
+      var fx = folder._x, fw = folder.offsetWidth;
+      x = fx + fw / 2 > W / 2 ? fx - width - 12 : fx + fw + 12;
+      x = Math.min(Math.max(0, x), W - width);
+      y = folder._y;
+    }
+    var viewTop = window.scrollY - desk.offsetTop + 12;
+    var viewBottom = viewTop + window.innerHeight - about.offsetHeight - 90;
+    y = Math.max(0, Math.min(Math.max(y, viewTop), Math.max(viewTop, viewBottom)));
     setPos(about, x, y);
     front(about);
     fitDesk();
   }
-  folder.addEventListener('pointerdown', function (e) { e.stopPropagation(); folder.classList.add('is-selected'); });
-  folder.addEventListener('dblclick', openAbout);
-  folder.addEventListener('click', function (e) {
-    if (e.detail === 0) openAbout();                       /* keyboard */
-    else if (e.pointerType && e.pointerType !== 'mouse') openAbout();
-    else if (!window.matchMedia('(hover: hover)').matches) openAbout();
+  var fdrag = null;
+  folder.addEventListener('pointerdown', function (e) {
+    if (e.button !== 0) return;
+    e.stopPropagation();
+    e.preventDefault();
+    folder.classList.add('is-selected');
+    folder.style.zIndex = ++z;
+    fdrag = { sx: e.clientX, sy: e.clientY, ox: folder._x, oy: folder._y, moved: false, id: e.pointerId };
+    folder.setPointerCapture(e.pointerId);
   });
+  folder.addEventListener('pointermove', function (e) {
+    if (!fdrag || e.pointerId !== fdrag.id) return;
+    var dx = e.clientX - fdrag.sx, dy = e.clientY - fdrag.sy;
+    if (!fdrag.moved && Math.abs(dx) + Math.abs(dy) < 5) return;
+    fdrag.moved = true;
+    folder.classList.add('is-dragging');
+    var W = desk.clientWidth;
+    setPos(folder, Math.min(Math.max(fdrag.ox + dx, -10), W - folder.offsetWidth + 10), Math.max(fdrag.oy + dy, 0));
+    fitDesk();
+  });
+  function endFolder(e) {
+    if (!fdrag || e.pointerId !== fdrag.id) return;
+    var moved = fdrag.moved;
+    fdrag = null;
+    folder.classList.remove('is-dragging');
+    if (!moved && e.type === 'pointerup') openAbout();
+  }
+  folder.addEventListener('pointerup', endFolder);
+  folder.addEventListener('pointercancel', endFolder);
+  folder.addEventListener('click', function (e) { if (e.detail === 0) openAbout(); });   /* keyboard */
   document.addEventListener('pointerdown', function (e) {
     if (!e.target.closest('#folder')) folder.classList.remove('is-selected');
   });
