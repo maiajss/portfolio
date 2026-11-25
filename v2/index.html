@@ -454,7 +454,7 @@ body.is-resizing, body.is-resizing * { user-select: none; -webkit-user-select: n
   </div>
 
   <header class="top">
-  <div class="ticker" role="marquee" aria-label="Hi! I&rsquo;m Maia &amp; I&rsquo;m an art director.">
+  <div class="ticker" role="marquee" aria-label="Hi! I&rsquo;m Maia &amp; I&rsquo;m an art director. Poetic computation is when technology is used for critical thinking and aesthetic computing.">
     <div class="ticker__track" id="tickerTrack" aria-hidden="true"></div>
   </div>
   <nav class="menu" aria-label="Menu bar">
@@ -569,9 +569,11 @@ body.is-resizing, body.is-resizing * { user-select: none; -webkit-user-select: n
   </footer>
 
 <script>
-/* Running text across the top. Add more lines to this list and they run in turn. */
+/* Running text across the top. Lines run in turn: each one starts at the right
+   edge as the one before is almost off the left edge. Add more lines here. */
 var TICKER = [
-  'Hi! I\u2019m Maia & I\u2019m an art director.'
+  'Hi! I\u2019m Maia & I\u2019m an art director.',
+  'Poetic computation is when technology is used for critical thinking and aesthetic computing.'
 ];
 (function () {
   var track = document.getElementById('tickerTrack');
@@ -581,11 +583,13 @@ var TICKER = [
     half.style.display = 'inline-flex';
     track.appendChild(half);
     /* fill at least one screen width, then duplicate so the loop is seamless */
+    var gap = Math.max(96, window.innerWidth - 120);   /* the previous line has ~120px left on screen */
     var guard = 0;
     do {
       TICKER.forEach(function (t) {
         var i = document.createElement('span');
         i.className = 'ticker__item';
+        i.style.paddingRight = gap + 'px';
         i.textContent = t;
         half.appendChild(i);
       });
