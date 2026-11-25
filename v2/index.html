@@ -190,18 +190,7 @@ button { font: inherit; color: inherit; }
 }
 .win.is-front .win__bar { background: linear-gradient(#ececec, var(--chrome)); color: #1d1d1f; }
 .win__dots { display: flex; gap: 5px; flex: none; }
-.win__dot {
-  width: 12px; height: 12px;
-  border-radius: 50%;
-  border: 0;
-  padding: 0;
-  background: #4d4d4d;
-  color: transparent;
-  font: 700 10px/12px var(--font-ui);
-  text-align: center;
-  cursor: pointer;
-}
-.win__bar:hover .win__dot, .win__dot:focus-visible { color: #d6d6d6; }
+.win__dot { width: 12px; height: 12px; border-radius: 50%; background: #4d4d4d; }
 .win__name {
   flex: 1 1 auto;
   min-width: 0;
@@ -221,7 +210,7 @@ button { font: inherit; color: inherit; }
   background: #f4f4f4;
 }
 .win__open:hover { background: #fff; }
-.win__dot:focus-visible, .win__open:focus-visible, .menu__item:focus-visible, .dock__item:focus-visible {
+.win__open:focus-visible, .menu__item:focus-visible {
   outline: 2px solid var(--select);
   outline-offset: 2px;
 }
@@ -278,40 +267,28 @@ button { font: inherit; color: inherit; }
 .doc__head { font-weight: 700; }
 .doc__art { width: min(220px, 55%); height: auto; mix-blend-mode: multiply; margin: 0 0 14px; }
 
-/* ---------- Dock (closed windows) ---------- */
-.dock {
-  position: fixed;
-  left: 0; right: 0;
-  bottom: max(14px, env(safe-area-inset-bottom, 0px));
-  z-index: 100001;
-  display: flex;
-  justify-content: center;
-  pointer-events: none;
-  padding-left: max(16px, env(safe-area-inset-left, 0px));
-  padding-right: max(16px, env(safe-area-inset-right, 0px));
+/* ---------- Resize handles on every edge and corner ---------- */
+.rz { position: absolute; z-index: 3; touch-action: none; }
+.rz--n, .rz--s { left: 12px; right: 12px; height: 8px; }
+.rz--e, .rz--w { top: 12px; bottom: 12px; width: 8px; }
+.rz--n { top: 0; cursor: ns-resize; }
+.rz--s { bottom: 0; cursor: ns-resize; }
+.rz--e { right: 0; cursor: ew-resize; }
+.rz--w { left: 0; cursor: ew-resize; }
+.rz--ne, .rz--nw, .rz--se, .rz--sw { width: 16px; height: 16px; }
+.rz--ne { top: 0; right: 0; cursor: nesw-resize; }
+.rz--sw { bottom: 0; left: 0; cursor: nesw-resize; }
+.rz--nw { top: 0; left: 0; cursor: nwse-resize; }
+.rz--se { bottom: 0; right: 0; cursor: nwse-resize; }
+@media (pointer: coarse) {            /* bigger targets for fingers */
+  .rz--n, .rz--s { height: 14px; }
+  .rz--e, .rz--w { width: 14px; }
+  .rz--ne, .rz--nw, .rz--se, .rz--sw { width: 26px; height: 26px; }
 }
-.dock__inner {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
-  gap: 6px;
-  padding: 7px;
-  border-radius: 14px;
-  background: var(--glass);
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
-  box-shadow: 0 8px 24px rgba(0,0,0,.25);
-  pointer-events: auto;
-}
-.dock__item {
-  font-size: 11.5px;
-  font-weight: 600;
-  background: #fff;
-  border: 0.5px solid #c4c4c4;
-  border-radius: 7px;
-  padding: 5px 9px;
-  cursor: pointer;
-}
+.win.is-resizing { transition: none; box-shadow: var(--shadow-lift); }
+body.is-resizing, body.is-resizing * { user-select: none; -webkit-user-select: none; }
+/* The About window can be resized freely; its page fills whatever height it has */
+.win--doc.is-sized .doc__page { flex: 1 1 auto; min-height: 0; max-height: none; }
 
 @media (prefers-reduced-motion: reduce) {
   .win, .wall img { transition: none; }
@@ -335,7 +312,7 @@ button { font: inherit; color: inherit; }
     <button class="menu__item" id="cleanUp" type="button">Clean Up</button>
     <button class="menu__item" id="nextWall" type="button" hidden>Wallpaper</button>
     <span class="menu__spacer"></span>
-    <span class="menu__hint">Drag a window by its title bar</span>
+    <span class="menu__hint">Drag a title bar to move a window, or an edge to resize it</span>
     <span class="menu__clock" id="clock"></span>
   </nav>
 
@@ -354,14 +331,14 @@ button { font: inherit; color: inherit; }
     </button>
 
     <article class="win" data-id="good">
-      <div class="win__bar"><span class="win__dots"><button class="win__dot" data-act="close" aria-label="Close" type="button">×</button><button class="win__dot" data-act="zoom" aria-label="Enlarge" type="button">+</button></span>
+      <div class="win__bar"><span class="win__dots" aria-hidden="true"><span class="win__dot"></span><span class="win__dot"></span></span>
         <span class="win__name">The Good $#!T.mov</span>
         <a class="win__open" href="../projects/the-good-shit.html">Open</a></div>
       <a class="win__body" href="../projects/the-good-shit.html" tabindex="-1"><img src="../assets/projects/the-good-shit.jpg" alt="The Good $#!T: a history lesson, but make it Miller Time" width="1600" height="812"></a>
     </article>
 
     <article class="win" data-id="nature">
-      <div class="win__bar"><span class="win__dots"><button class="win__dot" data-act="close" aria-label="Close" type="button">×</button><button class="win__dot" data-act="zoom" aria-label="Enlarge" type="button">+</button></span>
+      <div class="win__bar"><span class="win__dots" aria-hidden="true"><span class="win__dot"></span><span class="win__dot"></span></span>
         <span class="win__name">Nature Is Speaking.mp4</span>
         <a class="win__open" href="../projects/nature-is-speaking.html">Open</a></div>
       <a class="win__body" href="../projects/nature-is-speaking.html" tabindex="-1">
@@ -372,49 +349,49 @@ button { font: inherit; color: inherit; }
     </article>
 
     <article class="win" data-id="beer">
-      <div class="win__bar"><span class="win__dots"><button class="win__dot" data-act="close" aria-label="Close" type="button">×</button><button class="win__dot" data-act="zoom" aria-label="Enlarge" type="button">+</button></span>
+      <div class="win__bar"><span class="win__dots" aria-hidden="true"><span class="win__dot"></span><span class="win__dot"></span></span>
         <span class="win__name">#BeerYourselfie.jpg</span>
         <a class="win__open" href="../projects/beeryourselfie.html">Open</a></div>
       <a class="win__body" href="../projects/beeryourselfie.html" tabindex="-1"><img src="../assets/projects/beeryourselfie.jpg" alt="#BeerYourselfie: a selfie stick with a beer on it" width="1500" height="468"></a>
     </article>
 
     <article class="win" data-id="sweat">
-      <div class="win__bar"><span class="win__dots"><button class="win__dot" data-act="close" aria-label="Close" type="button">×</button><button class="win__dot" data-act="zoom" aria-label="Enlarge" type="button">+</button></span>
+      <div class="win__bar"><span class="win__dots" aria-hidden="true"><span class="win__dot"></span><span class="win__dot"></span></span>
         <span class="win__name">Better With Sweat.jpg</span>
         <a class="win__open" href="../projects/better-with-sweat.html">Open</a></div>
       <a class="win__body" href="../projects/better-with-sweat.html" tabindex="-1"><img src="../assets/projects/better-with-sweat.jpg" alt="Better With Sweat: the best reward for hard work" width="750" height="468"></a>
     </article>
 
     <article class="win" data-id="prayers">
-      <div class="win__bar"><span class="win__dots"><button class="win__dot" data-act="close" aria-label="Close" type="button">×</button><button class="win__dot" data-act="zoom" aria-label="Enlarge" type="button">+</button></span>
+      <div class="win__bar"><span class="win__dots" aria-hidden="true"><span class="win__dot"></span><span class="win__dot"></span></span>
         <span class="win__name">Prayers For Change.mov</span>
         <a class="win__open" href="../projects/prayers-for-change.html">Open</a></div>
       <a class="win__body" href="../projects/prayers-for-change.html" tabindex="-1"><img src="../assets/projects/prayers-for-change.jpg" alt="Prayers For Change: now thoughts and prayers can create real change" width="1000" height="625"></a>
     </article>
 
     <article class="win" data-id="tama">
-      <div class="win__bar"><span class="win__dots"><button class="win__dot" data-act="close" aria-label="Close" type="button">×</button><button class="win__dot" data-act="zoom" aria-label="Enlarge" type="button">+</button></span>
+      <div class="win__bar"><span class="win__dots" aria-hidden="true"><span class="win__dot"></span><span class="win__dot"></span></span>
         <span class="win__name">Tamacare.app</span>
         <a class="win__open" href="../projects/tamacare.html">Open</a></div>
       <a class="win__body win__body--product" href="../projects/tamacare.html" tabindex="-1" style="--backdrop:#f7f7f7"><img src="../assets/projects/tamacare.png" alt="Tamacare: a digital resource for virtual parents" width="1000" height="625"></a>
     </article>
 
     <article class="win" data-id="fetch">
-      <div class="win__bar"><span class="win__dots"><button class="win__dot" data-act="close" aria-label="Close" type="button">×</button><button class="win__dot" data-act="zoom" aria-label="Enlarge" type="button">+</button></span>
+      <div class="win__bar"><span class="win__dots" aria-hidden="true"><span class="win__dot"></span><span class="win__dot"></span></span>
         <span class="win__name">Go Fetch Adventure.jpg</span>
         <a class="win__open" href="../projects/go-fetch-adventure.html">Open</a></div>
       <a class="win__body" href="../projects/go-fetch-adventure.html" tabindex="-1"><img src="../assets/projects/go-fetch-adventure.jpg" alt="Go Fetch Adventure: this isn't a pound, it's a vacation destination" width="750" height="468"></a>
     </article>
 
     <article class="win" data-id="notes">
-      <div class="win__bar"><span class="win__dots"><button class="win__dot" data-act="close" aria-label="Close" type="button">×</button><button class="win__dot" data-act="zoom" aria-label="Enlarge" type="button">+</button></span>
+      <div class="win__bar"><span class="win__dots" aria-hidden="true"><span class="win__dot"></span><span class="win__dot"></span></span>
         <span class="win__name">Notes.txt</span>
         <a class="win__open" href="../projects/notes.html">Open</a></div>
       <a class="win__body win__body--product" href="../projects/notes.html" tabindex="-1" style="--backdrop:#f5f1eb"><img src="../assets/projects/notes.png" alt="Notes: daily reminders turned full-on philosophy" width="1148" height="717"></a>
     </article>
 
     <article class="win win--doc" data-id="about" hidden aria-label="About Maia">
-      <div class="win__bar"><span class="win__dots"><button class="win__dot" data-act="close" aria-label="Close" type="button">×</button><button class="win__dot" data-act="zoom" aria-label="Enlarge" type="button">+</button></span>
+      <div class="win__bar"><span class="win__dots" aria-hidden="true"><span class="win__dot"></span><span class="win__dot"></span></span>
         <span class="win__name">About Maia.rtf</span></div>
       <div class="doc__tools" aria-hidden="true">
         <span class="doc__pick">Helvetica Neue</span>
@@ -433,7 +410,6 @@ button { font: inherit; color: inherit; }
     </article>
   </main>
 
-  <div class="dock" id="dock" hidden><div class="dock__inner" id="dockInner"></div></div>
 
 <script>
 (function () {
@@ -441,8 +417,6 @@ button { font: inherit; color: inherit; }
   var folder = document.getElementById('folder');
   var about = desk.querySelector('[data-id="about"]');
   var wins = Array.prototype.slice.call(desk.querySelectorAll('.win'));
-  var dock = document.getElementById('dock');
-  var dockInner = document.getElementById('dockInner');
   var reduceMotion = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
   var z = 10;
 
@@ -486,17 +460,15 @@ button { font: inherit; color: inherit; }
     ORDER.forEach(function (id, i) {
       var w = desk.querySelector('[data-id="' + id + '"]');
       var p = L[id];
-      w.hidden = false;
-      w.classList.remove('is-zoomed');
       w.style.width = (p[2] * W / 100) + 'px';
       setPos(w, p[0] * W / 100, p[1] * W / 100 + offset);
       w.style.zIndex = 10 + i;
     });
     about.hidden = true;
-    about.classList.remove('is-zoomed');
+    about.style.height = '';
+    about.classList.remove('is-sized');
     z = 10 + ORDER.length;
     front(desk.querySelector('[data-id="notes"]'));
-    renderDock();
     fitDesk();
   }
 
@@ -526,7 +498,7 @@ button { font: inherit; color: inherit; }
     w.addEventListener('pointerdown', function (e) {
       front(w);
       folder.classList.remove('is-selected');
-      if (e.target.closest('button, .win__open, .doc__page')) return;
+      if (e.target.closest('.rz, .win__open, .doc__page')) return;
       var onBar = !!e.target.closest('.win__bar');
       if (!onBar && e.pointerType !== 'mouse') return;
       if (e.button !== 0) return;
@@ -562,53 +534,77 @@ button { font: inherit; color: inherit; }
     /* Mouse clicks are handled above; keyboard activation (detail 0) still follows the link. */
     if (body) body.addEventListener('click', function (e) { if (e.detail !== 0) e.preventDefault(); });
 
-    w.querySelector('.win__bar').addEventListener('dblclick', function (e) {
-      if (e.target.closest('button, a')) return;
-      zoom(w);
-    });
-    w.querySelector('[data-act="zoom"]').addEventListener('click', function () { zoom(w); });
-    w.querySelector('[data-act="close"]').addEventListener('click', function () {
-      w.hidden = true;
-      if (w !== about) renderDock();
-      fitDesk();
-    });
+    addHandles(w);
   });
 
-  function zoom(w) {
-    var W = desk.clientWidth;
-    if (w.classList.contains('is-zoomed')) {
-      w.classList.remove('is-zoomed');
-      w.style.width = w._prev.w + 'px';
-      setPos(w, w._prev.x, w._prev.y);
-    } else {
-      w._prev = { w: w.offsetWidth, x: w._x, y: w._y };
-      w.classList.add('is-zoomed');
-      var target = Math.min(W, w === about ? 760 : 1100);
-      var top = Math.max(0, window.scrollY - desk.offsetTop + 40);
-      w.style.width = target + 'px';
-      setPos(w, (W - target) / 2, top);
-    }
-    front(w);
-    setTimeout(fitDesk, 280);
-  }
-
-  function renderDock() {
-    dockInner.textContent = '';
-    var closed = wins.filter(function (w) { return w.hidden && w !== about; });
-    dock.hidden = closed.length === 0;
-    closed.forEach(function (w) {
-      var b = document.createElement('button');
-      b.type = 'button';
-      b.className = 'dock__item';
-      b.textContent = w.querySelector('.win__name').textContent;
-      b.addEventListener('click', function () {
-        w.hidden = false;
-        front(w);
-        renderDock();
-        fitDesk();
-      });
-      dockInner.appendChild(b);
+  /* Resizing: grab any edge or corner. Picture windows keep their proportions;
+     the About window stretches freely. The opposite edge stays put. */
+  var MIN_W = 180;
+  function addHandles(w) {
+    ['n','s','e','w','ne','nw','se','sw'].forEach(function (dir) {
+      var h = document.createElement('span');
+      h.className = 'rz rz--' + dir;
+      h.setAttribute('aria-hidden', 'true');
+      h.addEventListener('pointerdown', function (e) { startResize(e, w, dir); });
+      w.appendChild(h);
     });
+  }
+  var rs = null;
+  function startResize(e, w, dir) {
+    if (e.button !== 0) return;
+    e.preventDefault();
+    e.stopPropagation();
+    front(w);
+    rs = { w: w, dir: dir, sx: e.clientX, sy: e.clientY,
+           x: w._x, y: w._y, cw: w.offsetWidth, ch: w.offsetHeight,
+           free: w === about, id: e.pointerId, el: e.currentTarget };
+    rs.ratio = rs.cw / rs.ch;
+    rs.el.setPointerCapture(e.pointerId);
+    w.classList.add('is-resizing');
+    document.body.classList.add('is-resizing');
+    rs.el.addEventListener('pointermove', onResize);
+    rs.el.addEventListener('pointerup', endResize);
+    rs.el.addEventListener('pointercancel', endResize);
+  }
+  function onResize(e) {
+    if (!rs || e.pointerId !== rs.id) return;
+    var d = rs.dir, dx = e.clientX - rs.sx, dy = e.clientY - rs.sy;
+    var W = desk.clientWidth;
+    var hasE = d.indexOf('e') > -1, hasW = d.indexOf('w') > -1;
+    var hasN = d.indexOf('n') > -1, hasS = d.indexOf('s') > -1;
+    var nw = rs.cw, nh = rs.ch;
+    if (hasE) nw = rs.cw + dx;
+    if (hasW) nw = rs.cw - dx;
+    if (hasS) nh = rs.ch + dy;
+    if (hasN) nh = rs.ch - dy;
+    if (!rs.free) {
+      /* keep proportions: follow whichever direction moved further */
+      var fromH = nh * rs.ratio;
+      if (!(hasE || hasW)) nw = fromH;
+      else if ((hasN || hasS) && Math.abs(fromH - rs.cw) > Math.abs(nw - rs.cw)) nw = fromH;
+    }
+    nw = Math.max(MIN_W, Math.min(nw, W));
+    if (rs.free) nh = Math.max(160, nh); else nh = nw / rs.ratio;
+    var x = hasW ? rs.x + (rs.cw - nw) : rs.x;
+    var y = hasN ? rs.y + (rs.ch - nh) : rs.y;
+    if (y < 0) {                       /* stop at the top of the desk */
+      y = 0;
+      nh = rs.y + rs.ch;
+      if (!rs.free) { nw = nh * rs.ratio; if (hasW) x = rs.x + (rs.cw - nw); }
+    }
+    rs.w.style.width = nw + 'px';
+    if (rs.free) { rs.w.style.height = nh + 'px'; rs.w.classList.add('is-sized'); }
+    setPos(rs.w, x, y);
+    fitDesk();
+  }
+  function endResize(e) {
+    if (!rs || e.pointerId !== rs.id) return;
+    rs.w.classList.remove('is-resizing');
+    document.body.classList.remove('is-resizing');
+    rs.el.removeEventListener('pointermove', onResize);
+    rs.el.removeEventListener('pointerup', endResize);
+    rs.el.removeEventListener('pointercancel', endResize);
+    rs = null;
   }
 
   /* The folder: click selects, double-click opens (one tap on touch, Enter on keyboard). */
