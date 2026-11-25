@@ -23,7 +23,7 @@
   --chrome: #e4e4e4;
   --chrome-dim: #d6d6d6;
   --chrome-edge: #bdbdbd;
-  --glass: rgba(246,246,246,.72);
+  --glass: rgba(240,240,240,.94);
   --select: #2f6fe4;
   --folder-back: #5aa8e8;
   --folder-front: #84c3f4;
@@ -43,7 +43,7 @@ html { -webkit-text-size-adjust: 100%; overflow-x: clip; }
 body {
   margin: 0;
   min-height: 100vh;
-  background: #8a7a68;
+  background: #000;
   color: var(--ink);
   font-family: var(--font-ui);
   overflow-x: hidden;
@@ -52,7 +52,7 @@ img, video { display: block; max-width: 100%; }
 button { font: inherit; color: inherit; }
 
 /* ---------- Wallpaper ---------- */
-.wall { position: fixed; inset: 0; z-index: 0; overflow: hidden; background: #8a7a68; }
+.wall { position: fixed; inset: 0; z-index: 0; overflow: hidden; background: #000; }
 .wall img {
   position: absolute; inset: 0;
   width: 100%; height: 100%;
@@ -320,11 +320,12 @@ button { font: inherit; color: inherit; }
 </head>
 <body>
   <div class="wall" id="wall" aria-hidden="true">
-    <!-- Placeholder wallpapers cropped from the Go Fetch posters -->
+    <!-- Plain black for now. To bring the rotating wallpapers back, uncomment:
     <img class="is-on" src="wallpapers/canyon.jpg" alt="" width="1440" height="900">
     <img src="wallpapers/tree.jpg" alt="" width="1440" height="900" loading="lazy">
     <img src="wallpapers/snow.jpg" alt="" width="1440" height="900" loading="lazy">
     <img src="wallpapers/family.jpg" alt="" width="1440" height="900" loading="lazy">
+    -->
   </div>
 
   <nav class="menu" aria-label="Menu bar">
@@ -332,7 +333,7 @@ button { font: inherit; color: inherit; }
     <span class="menu__name">Maia Swift</span>
     <span class="menu__role">Art Director</span>
     <button class="menu__item" id="cleanUp" type="button">Clean Up</button>
-    <button class="menu__item" id="nextWall" type="button">Wallpaper</button>
+    <button class="menu__item" id="nextWall" type="button" hidden>Wallpaper</button>
     <span class="menu__spacer"></span>
     <span class="menu__hint">Drag a window by its title bar</span>
     <span class="menu__clock" id="clock"></span>
@@ -639,12 +640,13 @@ button { font: inherit; color: inherit; }
   var walls = Array.prototype.slice.call(document.querySelectorAll('#wall img'));
   var current = 0;
   function nextWall() {
+    if (walls.length < 2) return;
     walls[current].classList.remove('is-on');
     current = (current + 1) % walls.length;
     walls[current].loading = 'eager';
     walls[current].classList.add('is-on');
   }
-  var timer = reduceMotion ? null : setInterval(nextWall, 9000);
+  var timer = (reduceMotion || walls.length < 2) ? null : setInterval(nextWall, 9000);
   document.getElementById('nextWall').addEventListener('click', function () {
     nextWall();
     if (timer) { clearInterval(timer); timer = setInterval(nextWall, 9000); }
