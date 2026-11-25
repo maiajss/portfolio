@@ -56,7 +56,7 @@
   --font-ui: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Helvetica Neue", Helvetica, Arial, sans-serif;
   --font-doc: "Helvetica Neue", Helvetica, Arial, sans-serif;
   --font-type: "DM Mono", "Courier New", monospace;
-  --menu-h: 28px;
+  --menu-h: 0px;     /* menu bar removed for now */
   --ticker-h: 24px;
   color-scheme: light;
 }
@@ -457,16 +457,7 @@ body.is-resizing, body.is-resizing * { user-select: none; -webkit-user-select: n
   <div class="ticker" role="marquee" aria-label="Hi! I&rsquo;m Maia &amp; I&rsquo;m an art director. Poetic computation is when technology is used for critical thinking and aesthetic computing.">
     <div class="ticker__track" id="tickerTrack" aria-hidden="true"></div>
   </div>
-  <nav class="menu" aria-label="Menu bar">
-    <span class="menu__logo" role="img" aria-label="MAIA!"></span>
-    <span class="menu__name">Maia Swift</span>
-    <span class="menu__role">Art Director</span>
-    <button class="menu__item" id="cleanUp" type="button">Clean Up</button>
-    <button class="menu__item" id="nextWall" type="button" hidden>Wallpaper</button>
-    <span class="menu__spacer"></span>
-    <span class="menu__hint">Drag a title bar to move a window, or an edge to resize it</span>
-    <span class="menu__clock" id="clock"></span>
-  </nav>
+  <!-- Menu bar removed for now; a new idea for this spot to come. -->
   </header>
 
   <main class="desk" id="desk" aria-label="Projects">
@@ -903,19 +894,7 @@ var TICKER = [
     walls[current].classList.add('is-on');
   }
   var timer = (reduceMotion || walls.length < 2) ? null : setInterval(nextWall, 9000);
-  document.getElementById('nextWall').addEventListener('click', function () {
-    nextWall();
-    if (timer) { clearInterval(timer); timer = setInterval(nextWall, 9000); }
-  });
 
-  /* Menu bar clock, in the viewer's own time */
-  var clock = document.getElementById('clock');
-  function tick() {
-    var d = new Date();
-    clock.textContent = d.toLocaleDateString(undefined, { weekday: 'short', month: 'short', day: 'numeric' }) + '  ' +
-      d.toLocaleTimeString(undefined, { hour: 'numeric', minute: '2-digit' });
-  }
-  tick(); setInterval(tick, 15000);
 
   /* Cathode ray (black) / liquid crystal (inverted) mode, remembered per visitor */
   var root = document.documentElement;
@@ -932,7 +911,6 @@ var TICKER = [
     setMode(root.getAttribute('data-mode') === 'lcd' ? 'crt' : 'lcd');
   });
 
-  document.getElementById('cleanUp').addEventListener('click', function () { place(true); });
   var t;
   window.addEventListener('resize', function () { clearTimeout(t); t = setTimeout(function () { place(false); }, 120); });
   window.addEventListener('load', fitDesk);
