@@ -327,6 +327,27 @@ button { font: inherit; color: inherit; }
 .win.is-full .win__body--product img { padding: 3%; }
 .win--doc.is-full .doc__page { flex: 1 1 auto; min-height: 0; max-height: none; }
 body.has-full { overflow: hidden; }
+/* full page shows the whole project page */
+.win.is-full .win__body { display: none; }
+.win.is-full .win__phone { display: block; }
+
+/* Enlarged on click: centred over a dimmed desk; click the dimmed area to go back */
+.peek-veil {
+  position: fixed;
+  inset: 0;
+  z-index: 99990;
+  background: rgba(0,0,0,.6);
+  cursor: zoom-out;
+}
+.win.is-peek {
+  position: fixed;
+  z-index: 99995 !important;
+  transition: none;
+  box-shadow: var(--shadow-lift);
+}
+.win.is-peek .rz { display: none; }
+.win.is-peek .win__bar { cursor: default; }
+.win.is-peek .win__body { cursor: zoom-out; }
 
 /* Mobile view: the window turns phone-shaped and shows the project page at phone width */
 .win__phone { display: none; flex: 1 1 auto; min-height: 0; background: #fff; }
@@ -365,7 +386,7 @@ body.has-full { overflow: hidden; }
   outline-offset: 2px;
 }
 
-.win__body { position: relative; display: block; background: var(--backdrop, #000); cursor: pointer; }
+.win__body { position: relative; display: block; background: var(--backdrop, #000); cursor: zoom-in; }
 .win__body img, .win__body video {
   width: 100%;
   height: auto;
@@ -774,7 +795,7 @@ var TICKER = [
     var data = { mode: mode, W: W, z: z, wins: {}, folder: { x: folder._x / W, y: folder._y / W, z: +folder.style.zIndex || 5 } };
     wins.forEach(function (w) {
       data.wins[w.getAttribute('data-id')] = {
-        x: w._x / W, y: w._y / W, w: w.offsetWidth / W,
+        x: w._x / W, y: w._y / W, w: (w.classList.contains('is-peek') ? w._peek.w : w.offsetWidth) / W,
         h: w.style.height ? parseFloat(w.style.height) / W : 0,
         z: +w.style.zIndex || 10,
         mobile: w.classList.contains('is-mobile'),
@@ -825,6 +846,7 @@ var TICKER = [
     w.addEventListener('pointerdown', function (e) {
       front(w);
       folder.classList.remove('is-selected');
+      if (w.classList.contains('is-peek')) { if (!e.target.closest('button')) { e.preventDefault(); } return; }
       if (e.target.closest('.rz, .doc__pick, .doc__btn, .win__mobile, .win__max, .win__close, .doc__page, .win__phone') || w.classList.contains('is-full')) return;
       var onBar = !!e.target.closest('.win__bar');
       if (!onBar && e.pointerType !== 'mouse') return;
@@ -849,11 +871,9 @@ var TICKER = [
       if (!drag || drag.w !== w) return;
       var d = drag; drag = null;
       w.classList.remove('is-dragging');
-      /* A click on the picture without dragging opens the project. */
-      if (!d.moved && e.type === 'pointerup' && !e.target.closest('.win__bar')) {
-        var link = w.querySelector('.win__body[href]');
-        save();
-        if (link) window.location.href = link.getAttribute('href');
+      /* A click on the picture without dragging enlarges the window (nothing opens). */
+      if (!d.moved && e.type === 'pointerup' && !e.target.closest('.win__bar') && w.querySelector('.win__body')) {
+        peek(w);
       }
     }
     w.addEventListener('pointerup', end);
@@ -861,8 +881,10 @@ var TICKER = [
     var body = w.querySelector('.win__body[href]');
     /* Mouse clicks are handled above; keyboard activation (detail 0) still follows the link. */
     if (body) body.addEventListener('click', function (e) {
-      /* Mouse clicks are handled on pointerup; touch taps and keyboard follow the link. */
-      if (e.detail !== 0 && lastPointer === 'mouse' && !w.classList.contains('is-full')) e.preventDefault();
+      /* never follow the link; taps and Enter enlarge the window instead (mouse is handled on pointerup) */
+      e.preventDefault();
+      if (w.classList.contains('is-peek')) { unpeek(); return; }
+      if (e.detail === 0 || lastPointer !== 'mouse') peek(w);
     });
 
     addHandles(w);
@@ -886,25 +908,13 @@ var TICKER = [
   var PHONE_W = 360, PHONE_RATIO = 9 / 18.5;
   function toggleMobile(w, forceOff) {
     var btn = w.querySelector('.win__mobile');
+    if (!forceOff) unpeek();
     var on = forceOff ? false : !w.classList.contains('is-mobile');
     if (on === w.classList.contains('is-mobile')) return;
     if (on) {
       w._beforeMobile = { w: w.offsetWidth, x: w._x };
       var width = Math.min(PHONE_W, desk.clientWidth);
-      var phone = w.querySelector('.win__phone');
-      if (!phone) {
-        phone = document.createElement('div');
-        phone.className = 'win__phone';
-        var f = document.createElement('iframe');
-        f.title = w.querySelector('.win__name').textContent + ' in mobile view';
-        f.src = btn.getAttribute('data-src');
-        f.addEventListener('load', function () {
-          /* links inside the phone open in the whole tab, not inside the window */
-          try { f.contentDocument.querySelectorAll('a[href]').forEach(function (a) { if (!a.target) a.target = '_top'; }); } catch (e) {}
-        });
-        phone.appendChild(f);
-        w.insertBefore(phone, w.querySelector('.rz'));
-      }
+      ensureFrame(w);
       w.classList.add('is-mobile');
       w.style.width = width + 'px';
       w.style.height = Math.round(width / PHONE_RATIO) + 'px';
@@ -923,8 +933,79 @@ var TICKER = [
   }
 
   /* The green dot: fill the screen, tap again (or press Esc) to go back. */
+  /* The project page itself, loaded into the window on demand (phone view and full page) */
+  function ensureFrame(w) {
+    var btn = w.querySelector('.win__mobile');
+    if (!btn) return null;
+    var phone = w.querySelector('.win__phone');
+    if (!phone) {
+      phone = document.createElement('div');
+      phone.className = 'win__phone';
+      var f = document.createElement('iframe');
+      f.title = w.querySelector('.win__name').textContent;
+      f.src = btn.getAttribute('data-src');
+      f.addEventListener('load', function () {
+        /* links inside the window open in the whole tab */
+        try { f.contentDocument.querySelectorAll('a[href]').forEach(function (a) { if (!a.target) a.target = '_top'; }); } catch (e) {}
+      });
+      phone.appendChild(f);
+      w.insertBefore(phone, w.querySelector('.rz'));
+    }
+    return phone;
+  }
+
+  /* Click a window: it grows in the middle of the screen; click anywhere off it (or Esc) to put it back. */
+  var veil = document.createElement('div');
+  veil.className = 'peek-veil';
+  veil.hidden = true;
+  desk.appendChild(veil);   /* inside the desk so the enlarged window can sit above it */
+  var peeked = null;
+  function flip(w, from) {
+    if (reduceMotion || !w.animate) return;
+    var to = w.getBoundingClientRect();
+    if (!to.width) return;
+    w.animate([
+      { transformOrigin: 'top left', transform: 'translate(' + (from.left - to.left) + 'px,' + (from.top - to.top) + 'px) scale(' + (from.width / to.width) + ')' },
+      { transformOrigin: 'top left', transform: 'none' }
+    ], { duration: 260, easing: 'cubic-bezier(.2,.8,.2,1)' });
+  }
+  function peek(w) {
+    if (peeked || w.classList.contains('is-full') || w.classList.contains('is-mobile')) return;
+    var from = w.getBoundingClientRect();
+    var ratio = w.offsetWidth / w.offsetHeight;
+    var vw = window.innerWidth, vh = window.innerHeight;
+    var topBand = 24, bottomBand = 38, pad = vw < 700 ? 12 : 40;
+    var maxH = vh - topBand - bottomBand - pad * 2;
+    var width = Math.min(vw - pad * 2, 1200, maxH * ratio);
+    var height = width / ratio;
+    w._peek = { w: w.offsetWidth };
+    w.classList.add('is-peek');
+    w.style.width = width + 'px';
+    w.style.left = ((vw - width) / 2) + 'px';
+    w.style.top = (topBand + (vh - topBand - bottomBand - height) / 2) + 'px';
+    w.style.transform = 'none';
+    veil.hidden = false;
+    peeked = w;
+    flip(w, from);
+  }
+  function unpeek() {
+    var w = peeked;
+    if (!w) return;
+    var from = w.getBoundingClientRect();
+    peeked = null;
+    veil.hidden = true;
+    w.classList.remove('is-peek');
+    w.style.left = ''; w.style.top = '';
+    w.style.width = w._peek.w + 'px';
+    setPos(w, w._x, w._y);
+    flip(w, from);
+  }
+  veil.addEventListener('click', unpeek);
+
   function toggleFull(w) {
+    unpeek();
     var on = !w.classList.contains('is-full');
+    if (on) ensureFrame(w);
     wins.forEach(function (o) {
       o.classList.remove('is-full');
       o.querySelector('.win__max').setAttribute('aria-pressed', 'false');
@@ -939,6 +1020,7 @@ var TICKER = [
   }
   document.addEventListener('keydown', function (e) {
     if (e.key !== 'Escape') return;
+    if (peeked) { unpeek(); return; }
     var full = desk.querySelector('.win.is-full');
     if (full) toggleFull(full);
   });
