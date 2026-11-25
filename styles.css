@@ -184,7 +184,7 @@ img { max-width: 100%; height: auto; display: block; }
   object-fit: cover;
   z-index: -1;
   filter: grayscale(1) contrast(1.35);
-  opacity: 0.4;
+  opacity: var(--band-img-opacity, 0.4);
   pointer-events: none;
 }
 .band--img:has(.band__media)::before { display: none; filter: grayscale(1) contrast(1.35); }
