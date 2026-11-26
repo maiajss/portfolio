@@ -289,7 +289,7 @@ button { font: inherit; color: inherit; }
 .win__max:hover, .win__max[aria-pressed="true"] { background: var(--bar-fg-front); color: var(--chrome); }
 /* Close box: only shown while a window is full page; it returns to the desktop */
 .win__close { display: none; }
-.win.is-full .win__close, .win--doc .win__close {
+.win.is-full .win__close, .win.is-peek .win__close, .win--doc .win__close {
   display: block;
   flex: none;
   position: relative;
@@ -302,7 +302,7 @@ button { font: inherit; color: inherit; }
   color: var(--bar-fg-front);
   cursor: pointer;
 }
-.win.is-full .win__close::before, .win--doc .win__close::before { content: ""; position: absolute; inset: -8px; }
+.win.is-full .win__close::before, .win.is-peek .win__close::before, .win--doc .win__close::before { content: ""; position: absolute; inset: -8px; }
 .win__close svg { position: absolute; inset: -1px; width: 12px; height: 12px; fill: none; stroke: currentColor; stroke-width: 1.2; }
 .win__close:hover { background: var(--bar-fg-front); color: var(--chrome); }
 .win__close:focus-visible { outline: 2px solid var(--select); outline-offset: 2px; }
@@ -347,7 +347,9 @@ body.has-full { overflow: hidden; }
 }
 .win.is-peek .rz { display: none; }
 .win.is-peek .win__bar { cursor: default; }
-.win.is-peek .win__body { cursor: zoom-out; }
+.win.is-peek .win__body { cursor: zoom-in; }
+.win.is-reading .win__body { display: none; }
+.win.is-reading .win__phone { display: block; }
 
 /* Mobile view: the window turns phone-shaped and shows the project page at phone width */
 .win__phone { display: none; flex: 1 1 auto; min-height: 0; background: #fff; }
@@ -846,7 +848,7 @@ var TICKER = [
     w.addEventListener('pointerdown', function (e) {
       front(w);
       folder.classList.remove('is-selected');
-      if (w.classList.contains('is-peek')) { if (!e.target.closest('button')) { e.preventDefault(); } return; }
+      if (w.classList.contains('is-peek')) { if (!e.target.closest('button, .win__phone')) { e.preventDefault(); } return; }
       if (e.target.closest('.rz, .doc__pick, .doc__btn, .win__mobile, .win__max, .win__close, .doc__page, .win__phone') || w.classList.contains('is-full')) return;
       var onBar = !!e.target.closest('.win__bar');
       if (!onBar && e.pointerType !== 'mouse') return;
@@ -883,7 +885,7 @@ var TICKER = [
     if (body) body.addEventListener('click', function (e) {
       /* never follow the link; taps and Enter enlarge the window instead (mouse is handled on pointerup) */
       e.preventDefault();
-      if (w.classList.contains('is-peek')) { unpeek(); return; }
+      if (w.classList.contains('is-peek')) { read(w); return; }
       if (e.detail === 0 || lastPointer !== 'mouse') peek(w);
     });
 
@@ -896,6 +898,7 @@ var TICKER = [
     close.innerHTML = '<svg viewBox="0 0 12 12" aria-hidden="true"><path d="M3.5 3.5l5 5M8.5 3.5l-5 5"/></svg>';
     if (w === about) close.setAttribute('aria-label', 'Close About');
     close.addEventListener('click', function () {
+      if (w.classList.contains('is-peek')) { unpeek(); return; }
       if (w.classList.contains('is-full')) toggleFull(w);
       if (w === about) { about.hidden = true; fitDesk(); }   /* the About window can always be closed */
     });
@@ -988,13 +991,29 @@ var TICKER = [
     peeked = w;
     flip(w, from);
   }
+  /* Second click: the enlarged window becomes the whole project page, still on the desktop */
+  function read(w) {
+    if (peeked !== w || w.classList.contains('is-reading') || !ensureFrame(w)) return;
+    var from = w.getBoundingClientRect();
+    var vw = window.innerWidth, vh = window.innerHeight;
+    var topBand = 24, bottomBand = 38, pad = vw < 700 ? 12 : 40;
+    var width = Math.min(vw - pad * 2, 1100);
+    var height = vh - topBand - bottomBand - pad * 2;
+    w.classList.add('is-reading');
+    w.style.width = width + 'px';
+    w.style.height = height + 'px';
+    w.style.left = ((vw - width) / 2) + 'px';
+    w.style.top = (topBand + pad) + 'px';
+    flip(w, from);
+  }
   function unpeek() {
     var w = peeked;
     if (!w) return;
     var from = w.getBoundingClientRect();
     peeked = null;
     veil.hidden = true;
-    w.classList.remove('is-peek');
+    w.classList.remove('is-peek', 'is-reading');
+    w.style.height = '';
     w.style.left = ''; w.style.top = '';
     w.style.width = w._peek.w + 'px';
     setPos(w, w._x, w._y);
